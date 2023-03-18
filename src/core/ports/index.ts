@@ -6,3 +6,4 @@ export * from './json-web-token/error';
 export * from './json-web-token/type';
 
 export * from './mail/abstract';
+export * from './unit-of-work/abstract';
