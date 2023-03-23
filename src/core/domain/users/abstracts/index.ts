@@ -6,3 +6,4 @@ export * from './send-user-password-recovery-link-use-case.abstract';
 export * from './update-user-email-use-case.abstract';
 export * from './update-user-password-use-case.abstract';
 export * from './user-login-use-case.abstract';
+export * from './user-verify-email-use-case.abstract';
