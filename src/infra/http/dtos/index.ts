@@ -5,3 +5,4 @@ export * from './users/send-user-email-update-link-request.dto';
 export * from './users/send-user-password-recovery-link-request.dto';
 export * from './users/update-user-email-request.dto';
 export * from './users/update-user-password-request.dto';
+export * from './users/user-login-request.dto';
