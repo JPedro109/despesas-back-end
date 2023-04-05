@@ -6,3 +6,4 @@ export * from './users/send-user-password-recovery-link.controller';
 export * from './users/update-user-email.controller';
 export * from './users/update-user-password.controller';
 export * from './users/user-login.controller';
+export * from './users/user-verify-email.controller';
