@@ -9,3 +9,4 @@ export * from './users/user-login.controller';
 export * from './users/user-verify-email.controller';
 
 export * from './expenses/create-expense.controller';
+export * from './expenses/delete-expense.controller';
