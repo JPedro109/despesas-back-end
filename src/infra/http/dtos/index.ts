@@ -7,3 +7,5 @@ export * from './users/update-user-email-request.dto';
 export * from './users/update-user-password-request.dto';
 export * from './users/user-login-request.dto';
 export * from './users/user-verify-email-request.dto';
+
+export * from './expenses/create-expense-request.dto';
