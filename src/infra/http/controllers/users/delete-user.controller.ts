@@ -7,15 +7,49 @@ import {
   UseGuards,
   Req,
 } from '@nestjs/common';
+import {
+  ApiExtraModels,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+  getSchemaPath,
+} from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
 import { AbstractDeleteUserUseCase } from '@/core/domain/users/abstracts';
 import { DeleteUserResponseDTO } from '@/core/domain/users/dtos';
-import { DeleteUserBodyDTO } from '@/infra/http/dtos';
+import {
+  DeleteUserBodyDTO,
+  ErrorDTO,
+  InternalServerErrorDTO,
+} from '@/infra/http/dtos';
 
+@ApiTags('Users')
 @Controller('api/users')
 export class DeleteUserController {
   constructor(private readonly _useCase: AbstractDeleteUserUseCase) {}
 
+  @ApiOperation({ summary: 'Deletar usuário.' })
+  @ApiResponse({
+    status: 201,
+    description: 'Rota de criação de usuário',
+    type: String,
+  })
+  @ApiExtraModels(ErrorDTO)
+  @ApiResponse({
+    status: 400,
+    schema: {
+      $ref: getSchemaPath(ErrorDTO),
+    },
+    description: 'DTO inválido ou erro na regras de negócio',
+  })
+  @ApiExtraModels(InternalServerErrorDTO)
+  @ApiResponse({
+    status: 500,
+    schema: {
+      $ref: getSchemaPath(InternalServerErrorDTO),
+    },
+    description: 'Erro no servidor',
+  })
   @UseGuards(AuthGuard('jwt'))
   @HttpCode(200)
   @Delete()
