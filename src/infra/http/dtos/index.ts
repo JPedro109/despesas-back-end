@@ -11,3 +11,6 @@ export * from './users/user-verify-email-request.dto';
 export * from './expenses/create-expense-request.dto';
 export * from './expenses/delete-expense-request.dto';
 export * from './expenses/update-expense-request.dto';
+
+export * from './errors/error.dto';
+export * from './errors/internal-server-error.dto';
