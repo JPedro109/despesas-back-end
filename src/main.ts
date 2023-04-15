@@ -6,6 +6,7 @@ import {
   LoggerCustom,
   AbstractLogRepository,
 } from '@/custom';
+import { ENVIRONMENT, PORT } from '@/shared';
 import { AppModule } from '@/app.module';
 
 async function bootstrap() {
@@ -13,18 +14,22 @@ async function bootstrap() {
 
   app.enableCors();
 
-  SwaggerModule.setup(
-    'api/docs',
-    app,
-    SwaggerModule.createDocument(
-      app,
-      new DocumentBuilder()
-        .setTitle('Api de Despesas')
-        .setDescription('Aplicação voltada para gerenciamento de despesas')
-        .setVersion('1.0.0')
-        .build(),
-    ),
-  );
+  console.log(ENVIRONMENT);
+
+  ENVIRONMENT == 'TEST'
+    ? SwaggerModule.setup(
+        'api/docs',
+        app,
+        SwaggerModule.createDocument(
+          app,
+          new DocumentBuilder()
+            .setTitle('Api de Despesas')
+            .setDescription('Aplicação voltada para gerenciamento de despesas')
+            .setVersion('1.0.0')
+            .build(),
+        ),
+      )
+    : null;
 
   app.useLogger(
     new LoggerCustom(
@@ -35,6 +40,6 @@ async function bootstrap() {
 
   app.useGlobalPipes(new ValidationPipeCustom());
 
-  await app.listen(3000);
+  await app.listen(PORT || 3000);
 }
 bootstrap();
