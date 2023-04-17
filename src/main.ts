@@ -14,8 +14,6 @@ async function bootstrap() {
 
   app.enableCors();
 
-  console.log(ENVIRONMENT);
-
   ENVIRONMENT == 'TEST'
     ? SwaggerModule.setup(
         'api/docs',
