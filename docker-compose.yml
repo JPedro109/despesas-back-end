@@ -1,0 +1,33 @@
+version: "3.8"
+
+services:
+
+  api-despesas:
+    build: 
+      context: .
+      dockerfile: Dockerfile.dev
+    container_name: api-despesas
+    restart: always
+    env_file:
+      - .env
+    depends_on:
+     - database-sql
+     - database-nosql
+    ports:
+      - 3333:3333
+
+  database-sql:
+    image: mariadb
+    container_name: maria-db-api-despesas
+    restart: always
+    ports:
+      - 3306:3306
+    environment:
+      MARIADB_ROOT_PASSWORD: mariadb
+
+  database-nosql:
+    image: mongo:4.4.6
+    container_name: mongo-db-api-despesas
+    restart: always
+    ports:
+      - 27017:27017
