@@ -1,0 +1,57 @@
+name: Node.js CI
+
+on:
+  push:
+    branches: [ "staging" ]
+  pull_request:
+    branches: [ "staging" ]
+
+env:
+  ENVIRONMENT: "TEST"
+  JWT_KEY: "secret"
+  DATABASE_URL: "mysql://root:root@localhost:3306/database?schema=public"
+  DATABASE_NOSQL_URL: "mongodb://localhost:27017/expense"
+  HOST_PROVIDER_EMAIL: "sandbox.smtp.mailtrap.io"
+  PORT_PROVIDER_EMAIL: 2525
+  EMAIL_PROVIDER_EMAIL: ${{ secrets.EMAIL_PROVIDER_EMAIL }}
+  PASSWORD_PROVIDER_EMAIL: ${{ secrets.PASSWORD_PROVIDER_EMAIL }}
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [16.x]
+
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Use MySQL
+      uses: shogo82148/actions-setup-mysql@v1
+      with:
+        root-password: root
+
+    - name: Use MongoDB 4.4.6
+      uses: DigiPie/mongo-action@v2.0.1
+      with: 
+        image_version: 4.4.6
+      
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v3
+    
+    - name: "Install yarn package"
+      run: npm i -g yarn
+
+    - name: "Install dependencies"
+      run: yarn
+
+    - name: "Run migrations" 
+      run: yarn migrate:execute
+
+    - name: "Run tests"
+      run: yarn test:coverage
+    
+    - name: Send coverage result to Coveralls
+      uses: coverallsapp/github-action@v1
