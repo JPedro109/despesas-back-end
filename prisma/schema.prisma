@@ -1,0 +1,42 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model user {
+    id                             String     @default(uuid()) @id
+    email                          String     @unique
+    password                       String
+    verified_email                 Boolean?
+    created_at                     DateTime?  @default(now())
+    updated_at                     DateTime?
+    user_verification_code         user_verification_code[]
+    expense                        expense[]
+}
+
+model user_verification_code {
+    id                             String    @default(uuid()) @id
+    user_id                        String             
+    verification_code              String    @unique()
+    verification_code_expiry_date  BigInt    @default(0)
+    valid                          Boolean
+    password_recovery              Boolean
+    created_at                     DateTime? @default(now())
+    updated_at                     DateTime?
+    user       user                @relation(fields: [user_id], references: [id], onUpdate: Cascade, onDelete: Cascade)
+}
+
+model expense {
+    id                             String    @default(uuid()) @id
+    user_id                        String       
+    expense_name                   String
+    expense_value                  Float
+    due_date                       DateTime
+    created_at                     DateTime?  @default(now())
+    updated_at                     DateTime?      
+    user       user                @relation(fields: [user_id], references: [id], onUpdate: Cascade, onDelete: Cascade)
+}
