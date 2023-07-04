@@ -21,7 +21,7 @@
 - Node
 - NestJS
 - Typescript
-- Nodemailer
+- RabbitMQ
 - MySQL
 - MongoDB
 - Jest

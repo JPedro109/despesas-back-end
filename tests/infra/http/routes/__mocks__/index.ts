@@ -3,6 +3,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { ValidationPipeCustom } from '@/custom';
 import { HttpModule, DatabaseModule } from '@/infra';
 import { DatabaseService, MockRepository } from '@/infra/database/prisma';
+import { QueueHelper } from '@/infra/queue/helper';
 
 export const initApp = async () => {
   let module: TestingModule | null = null;
@@ -24,11 +25,13 @@ export const initApp = async () => {
 export const before = async (module: TestingModule) => {
   await module.get<DatabaseService>(DatabaseService).connect();
   await module.get<MockRepository>(MockRepository).createMocksToTestRoutes();
+  await QueueHelper.connect();
 };
 
 export const after = async (app: INestApplication, module: TestingModule) => {
   await module.get<MockRepository>(MockRepository).deleteMocks();
   await module.get<DatabaseService>(DatabaseService).disconnect();
+  await QueueHelper.disconnect();
   await app.close();
 };
 

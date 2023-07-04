@@ -11,10 +11,8 @@ env:
   JWT_KEY: "secret"
   DATABASE_URL: "mysql://root:root@localhost:3306/database?schema=public"
   DATABASE_NOSQL_URL: "mongodb://localhost:27017/expense"
-  HOST_PROVIDER_EMAIL: "sandbox.smtp.mailtrap.io"
-  PORT_PROVIDER_EMAIL: 2525
-  EMAIL_PROVIDER_EMAIL: ${{ secrets.EMAIL_PROVIDER_EMAIL }}
-  PASSWORD_PROVIDER_EMAIL: ${{ secrets.PASSWORD_PROVIDER_EMAIL }}
+  QUEUE_HOST: "amqp://admin:admin@localhost:5672"
+  QUEUE_NAME: "queue"
 
 jobs:
   build:
@@ -37,6 +35,13 @@ jobs:
       uses: DigiPie/mongo-action@v2.0.1
       with: 
         image_version: 4.4.6
+
+    - name: Use RabbitMQ 3.8
+      uses: getong/rabbitmq-action@v1.2
+      with:
+        rabbitmq version: 3.8
+        rabbitmq user: admin
+        rabbitmq password: admin 
       
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v3

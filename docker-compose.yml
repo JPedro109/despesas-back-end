@@ -31,3 +31,14 @@ services:
     restart: always
     ports:
       - 27017:27017
+
+  queue:
+    image: "rabbitmq:3.8-management-alpine"
+    container_name: queue-api-letmeask
+    hostname: rabbitmq
+    ports:
+      - "15672:15672"
+      - "5672:5672"
+    environment:
+      - RABBITMQ_DEFAULT_USER=admin
+      - RABBITMQ_DEFAULT_PASS=admin
