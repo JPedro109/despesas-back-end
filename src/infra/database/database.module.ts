@@ -1,8 +1,7 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { DATABASE_NOSQL_URL } from '@/shared';
-import { AbstractLogRepository } from '@/custom';
-import { AbstractUnitOfWork } from '@/core/ports';
+import { AbstractUnitOfWork, AbstractLogRepository } from '@/core/ports';
 import {
   AbstractUserRepository,
   AbstractUserVerificationCodeRepository,

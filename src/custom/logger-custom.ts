@@ -1,5 +1,5 @@
 import { ConsoleLogger } from '@nestjs/common';
-import { AbstractLogRepository } from './ports/log-repository/abstract';
+import { AbstractLogRepository } from '@/core/ports';
 
 export class LoggerCustom extends ConsoleLogger {
   constructor(

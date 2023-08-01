@@ -1,7 +1,7 @@
 import { Model, Document, Types } from 'mongoose';
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { AbstractLogRepository, LogModel } from '@/custom/ports';
+import { AbstractLogRepository, LogModel } from '@/core/ports';
 import { LogExpense } from '../models';
 
 @Injectable()

@@ -1,12 +1,9 @@
 import { NestFactory } from '@nestjs/core';
 import { ConsoleLogger } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import {
-  ValidationPipeCustom,
-  LoggerCustom,
-  AbstractLogRepository,
-} from '@/custom';
+import { ValidationPipeCustom, LoggerCustom } from '@/custom';
 import { ENVIRONMENT, PORT } from '@/shared';
+import { AbstractLogRepository } from '@/core/ports';
 import { AppModule } from '@/app.module';
 import { QueueHelper } from '@/infra/queue/helper';
 
