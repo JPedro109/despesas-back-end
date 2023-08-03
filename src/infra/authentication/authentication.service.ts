@@ -1,16 +1,16 @@
 import { Injectable } from '@nestjs/common';
 import {
-  AbstractJsonWebTokenService,
+  AbstractAuthenticationService,
   JsonWebTokenInvalidError,
   JsonWebTokenType,
 } from '@/core/ports';
 import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
-export class JsonWebTokenService implements AbstractJsonWebTokenService {
+export class AuthenticationService implements AbstractAuthenticationService {
   constructor(private jwtService: JwtService) {}
 
-  async createToken(
+  async createJsonWebToken(
     payload: object,
     expiryTimeInSeconds: number,
   ): Promise<string> {
@@ -19,7 +19,7 @@ export class JsonWebTokenService implements AbstractJsonWebTokenService {
     });
   }
 
-  async verifyToken(
+  async verifyJsonWebToken(
     token: string,
   ): Promise<JsonWebTokenType | JsonWebTokenInvalidError> {
     try {

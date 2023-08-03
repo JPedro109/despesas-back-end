@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { JwtStrategy } from '@/infra/json-web-token/strategies';
+import { JwtStrategy } from '@/infra/authentication/strategies';
 
 describe('Infra - JwtStrategy', () => {
   let service: JwtStrategy;

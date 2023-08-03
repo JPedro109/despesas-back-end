@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { JsonWebTokenModule } from '@/infra';
+import { AuthenticationModule } from '@/infra';
 import { UsersModule } from '@/core/domain/users/users.module';
 import { ExpensesModule } from '@/core/domain/expenses/expense.module';
 import {
@@ -19,7 +19,7 @@ import {
 } from './controllers';
 
 @Module({
-  imports: [UsersModule, ExpensesModule, JsonWebTokenModule],
+  imports: [UsersModule, ExpensesModule, AuthenticationModule],
   controllers: [
     CreateUserController,
     DeleteUserController,

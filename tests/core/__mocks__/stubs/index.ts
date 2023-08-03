@@ -5,7 +5,7 @@ import {
   AbstractGenerationService,
   AbstractCryptographyService,
   AbstractMailService,
-  AbstractJsonWebTokenService,
+  AbstractAuthenticationService,
   JsonWebTokenType,
   AbstractUnitOfWork,
 } from '@/core/ports';
@@ -175,15 +175,15 @@ export class CryptographyStub implements AbstractCryptographyService {
   }
 }
 
-export class JsonWebTokenStub implements AbstractJsonWebTokenService {
-  async createToken(
+export class JsonWebTokenStub implements AbstractAuthenticationService {
+  async createJsonWebToken(
     payload: object,
     expiryTimeInSeconds: number,
   ): Promise<string> {
     return 'jwt';
   }
 
-  async verifyToken(token: string): Promise<JsonWebTokenType> {
+  async verifyJsonWebToken(token: string): Promise<JsonWebTokenType> {
     return {
       id: '1',
       email: 'email@test.com',

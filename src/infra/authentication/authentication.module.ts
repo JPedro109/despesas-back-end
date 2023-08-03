@@ -1,9 +1,9 @@
 import { Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 import { JWT_KEY } from '@/shared';
-import { AbstractJsonWebTokenService } from '@/core/ports';
+import { AbstractAuthenticationService } from '@/core/ports';
 import { JwtStrategy } from './strategies';
-import { JsonWebTokenService } from './json-web-token.service';
+import { AuthenticationService } from './authentication.service';
 
 @Module({
   imports: [
@@ -14,17 +14,17 @@ import { JsonWebTokenService } from './json-web-token.service';
   ],
   providers: [
     {
-      provide: AbstractJsonWebTokenService,
-      useClass: JsonWebTokenService,
+      provide: AbstractAuthenticationService,
+      useClass: AuthenticationService,
     },
     JwtStrategy,
   ],
   exports: [
     {
-      provide: AbstractJsonWebTokenService,
-      useClass: JsonWebTokenService,
+      provide: AbstractAuthenticationService,
+      useClass: AuthenticationService,
     },
     JwtStrategy,
   ],
 })
-export class JsonWebTokenModule {}
+export class AuthenticationModule {}
