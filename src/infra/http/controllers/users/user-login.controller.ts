@@ -24,7 +24,7 @@ import {
 @ApiTags('Users')
 @Controller('api/users')
 export class UserLoginController {
-  constructor(private readonly _useCase: AbstractUserLoginUseCase) {}
+  constructor(private readonly useCase: AbstractUserLoginUseCase) {}
 
   @ApiOperation({ summary: 'Atualizar senha' })
   @ApiResponse({
@@ -60,7 +60,7 @@ export class UserLoginController {
   async handle(@Body() body: UserLoginBodyDTO): Promise<UserLoginResponseDTO> {
     const { email, password } = body;
 
-    const response = await this._useCase.execute({
+    const response = await this.useCase.execute({
       email,
       password,
     });

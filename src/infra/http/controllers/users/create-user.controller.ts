@@ -23,7 +23,7 @@ import {
 @ApiTags('Users')
 @Controller('api/users')
 export class CreateUserController {
-  constructor(private readonly _useCase: AbstractCreateUserUseCase) {}
+  constructor(private readonly useCase: AbstractCreateUserUseCase) {}
 
   @ApiOperation({ summary: 'Criar usuário' })
   @ApiResponse({
@@ -54,7 +54,7 @@ export class CreateUserController {
   ): Promise<CreateUserResponseDTO> {
     const { email, password, passwordConfirm } = body;
 
-    const response = await this._useCase.execute({
+    const response = await this.useCase.execute({
       email,
       password,
       passwordConfirm,

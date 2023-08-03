@@ -26,7 +26,7 @@ import {
 @ApiTags('Expenses')
 @Controller('api/expenses')
 export class CreateExpenseController {
-  constructor(private readonly _useCase: AbstractCreateExpenseUseCase) {}
+  constructor(private readonly useCase: AbstractCreateExpenseUseCase) {}
 
   @ApiOperation({ summary: 'Criar despesa' })
   @ApiResponse({
@@ -68,7 +68,7 @@ export class CreateExpenseController {
 
     const userId = req.user;
 
-    const response = await this._useCase.execute({
+    const response = await this.useCase.execute({
       expenseName,
       expenseValue,
       dueDate,

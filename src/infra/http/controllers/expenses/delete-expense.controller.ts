@@ -26,7 +26,7 @@ import {
 @ApiTags('Expenses')
 @Controller('api/expenses')
 export class DeleteExpenseController {
-  constructor(private readonly _useCase: AbstractDeleteExpenseUseCase) {}
+  constructor(private readonly useCase: AbstractDeleteExpenseUseCase) {}
 
   @ApiOperation({ summary: 'Deletar despesa' })
   @ApiResponse({
@@ -72,7 +72,7 @@ export class DeleteExpenseController {
   ): Promise<DeleteExpenseResponseDTO> {
     const { id } = body;
 
-    const response = await this._useCase.execute({
+    const response = await this.useCase.execute({
       id,
     });
 

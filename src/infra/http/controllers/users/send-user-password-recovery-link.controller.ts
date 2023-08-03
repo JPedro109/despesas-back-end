@@ -25,7 +25,7 @@ import {
 @Controller('api/users')
 export class SendUserPasswordRecoveryLinkController {
   constructor(
-    private readonly _useCase: AbstractSendUserPasswordRecoveryLinkUseCase,
+    private readonly useCase: AbstractSendUserPasswordRecoveryLinkUseCase,
   ) {}
 
   @ApiOperation({ summary: 'Enviar link de recuperação de senha.' })
@@ -65,7 +65,7 @@ export class SendUserPasswordRecoveryLinkController {
   ): Promise<SendUserPasswordRecoveryLinkResponseDTO> {
     const { email } = body;
 
-    const response = await this._useCase.execute({
+    const response = await this.useCase.execute({
       email,
     });
 

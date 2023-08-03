@@ -26,7 +26,7 @@ import {
 @ApiTags('Users')
 @Controller('api/users')
 export class UserVerifyEmailController {
-  constructor(private readonly _useCase: AbstractUserVerifyEmailUseCase) {}
+  constructor(private readonly useCase: AbstractUserVerifyEmailUseCase) {}
 
   @ApiOperation({ summary: 'Verificar email' })
   @ApiResponse({
@@ -71,7 +71,7 @@ export class UserVerifyEmailController {
   ): Promise<UserVerifyEmailResponseDTO> {
     const { email, code } = query;
 
-    const response = await this._useCase.execute({
+    const response = await this.useCase.execute({
       email,
       code,
     });

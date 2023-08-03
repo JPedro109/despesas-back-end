@@ -27,7 +27,7 @@ import {
 @ApiTags('Users')
 @Controller('api/users')
 export class RecoverUserPasswordController {
-  constructor(private readonly _useCase: AbstractRecoverUserPasswordUseCase) {}
+  constructor(private readonly useCase: AbstractRecoverUserPasswordUseCase) {}
 
   @ApiOperation({ summary: 'Recuperar senha do usuário.' })
   @ApiResponse({
@@ -69,7 +69,7 @@ export class RecoverUserPasswordController {
     const { password, passwordConfirm } = body;
     const { email, code } = query;
 
-    const response = await this._useCase.execute({
+    const response = await this.useCase.execute({
       email,
       code,
       password,

@@ -28,7 +28,7 @@ import {
 @ApiTags('Users')
 @Controller('api/users')
 export class UpdateUserPasswordController {
-  constructor(private readonly _useCase: AbstractUpdateUserPasswordUseCase) {}
+  constructor(private readonly useCase: AbstractUpdateUserPasswordUseCase) {}
 
   @ApiOperation({ summary: 'Atualizar senha' })
   @ApiResponse({
@@ -71,7 +71,7 @@ export class UpdateUserPasswordController {
 
     const userId = req.user;
 
-    const response = await this._useCase.execute({
+    const response = await this.useCase.execute({
       id: userId,
       password,
       newPassword,

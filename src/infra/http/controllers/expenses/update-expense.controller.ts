@@ -29,7 +29,7 @@ import {
 @ApiTags('Expenses')
 @Controller('api/expenses')
 export class UpdateExpenseController {
-  constructor(private readonly _useCase: AbstractUpdateExpenseUseCase) {}
+  constructor(private readonly useCase: AbstractUpdateExpenseUseCase) {}
 
   @ApiOperation({ summary: 'Atualizar despesa' })
   @ApiResponse({
@@ -78,7 +78,7 @@ export class UpdateExpenseController {
 
     const { expenseName, expenseValue, dueDate } = body;
 
-    const response = await this._useCase.execute({
+    const response = await this.useCase.execute({
       id,
       expenseName,
       expenseValue,

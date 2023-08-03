@@ -14,7 +14,7 @@ import { ErrorDTO, InternalServerErrorDTO } from '../../dtos';
 @ApiTags('Expenses')
 @Controller('api/expenses')
 export class GetExpensesController {
-  constructor(private readonly _useCase: AbstractGetExpensesUseCase) {}
+  constructor(private readonly useCase: AbstractGetExpensesUseCase) {}
 
   @ApiOperation({ summary: 'Retornar despesas' })
   @ApiResponse({
@@ -58,7 +58,7 @@ export class GetExpensesController {
   async handle(@Req() req): Promise<GetExpensesResponseDTO> {
     const userId = req.user;
 
-    const response = await this._useCase.execute({
+    const response = await this.useCase.execute({
       userId,
     });
 

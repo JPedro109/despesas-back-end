@@ -26,7 +26,7 @@ import {
 @ApiTags('Users')
 @Controller('api/users')
 export class DeleteUserController {
-  constructor(private readonly _useCase: AbstractDeleteUserUseCase) {}
+  constructor(private readonly useCase: AbstractDeleteUserUseCase) {}
 
   @ApiOperation({ summary: 'Deletar usuário.' })
   @ApiResponse({
@@ -61,7 +61,7 @@ export class DeleteUserController {
 
     const userId = req.user;
 
-    const response = await this._useCase.execute({
+    const response = await this.useCase.execute({
       id: userId,
       password,
       passwordConfirm,
