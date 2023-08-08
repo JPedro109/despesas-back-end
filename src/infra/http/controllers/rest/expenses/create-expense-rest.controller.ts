@@ -1,12 +1,11 @@
 import {
-  Query,
+  Body,
   Controller,
-  HttpCode,
-  Patch,
+  Post,
   BadRequestException,
+  HttpCode,
   UseGuards,
   Req,
-  NotFoundException,
 } from '@nestjs/common';
 import {
   ApiExtraModels,
@@ -16,24 +15,23 @@ import {
   getSchemaPath,
 } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
-import { AbstractUpdateUserEmailUseCase } from '@/core/domain/users/abstracts';
-import { UpdateUserEmailResponseDTO } from '@/core/domain/users/dtos';
+import { AbstractCreateExpenseUseCase } from '@/core/domain/expenses/abstracts';
+import { CreateExpenseResponseDTO } from '@/core/domain/expenses/dtos';
 import {
+  CreateExpenseUserBodyDTO,
   ErrorDTO,
   InternalServerErrorDTO,
-  UpdateUserEmailBodyDTO,
 } from '@/infra/http/dtos';
-import { NotFoundError } from '@/core/errors';
 
-@ApiTags('Users')
-@Controller('api/users')
-export class UpdateUserEmailController {
-  constructor(private readonly useCase: AbstractUpdateUserEmailUseCase) {}
+@ApiTags('Expenses')
+@Controller('api/expenses')
+export class CreateExpenseRestController {
+  constructor(private readonly useCase: AbstractCreateExpenseUseCase) {}
 
-  @ApiOperation({ summary: 'Atualizar email' })
+  @ApiOperation({ summary: 'Criar despesa' })
   @ApiResponse({
-    status: 200,
-    description: 'Rota de atualização de email',
+    status: 201,
+    description: 'Rota de criação de despesa',
     type: String,
   })
   @ApiExtraModels(ErrorDTO)
@@ -45,11 +43,11 @@ export class UpdateUserEmailController {
     description: 'DTO inválido ou erro na regras de negócio',
   })
   @ApiResponse({
-    status: 404,
+    status: 401,
     schema: {
       $ref: getSchemaPath(ErrorDTO),
     },
-    description: 'Usuário não encontrado',
+    description: 'Usuário não autorizado',
   })
   @ApiExtraModels(InternalServerErrorDTO)
   @ApiResponse({
@@ -60,28 +58,22 @@ export class UpdateUserEmailController {
     description: 'Erro no servidor',
   })
   @UseGuards(AuthGuard('jwt'))
-  @HttpCode(200)
-  @Patch('email')
+  @HttpCode(201)
+  @Post()
   async handle(
     @Req() req,
-    @Query()
-    body: UpdateUserEmailBodyDTO,
-  ): Promise<UpdateUserEmailResponseDTO> {
-    const { email, code } = body;
+    @Body() body: CreateExpenseUserBodyDTO,
+  ): Promise<CreateExpenseResponseDTO> {
+    const { expenseName, expenseValue, dueDate } = body;
 
     const userId = req.user;
 
     const response = await this.useCase.execute({
-      id: userId,
-      email,
-      code,
+      expenseName,
+      expenseValue,
+      dueDate,
+      userId,
     });
-
-    if (response instanceof NotFoundError)
-      throw new NotFoundException(response.message, {
-        cause: response,
-        description: response.name,
-      });
 
     if (response instanceof Error)
       throw new BadRequestException(response.message, {
@@ -89,6 +81,6 @@ export class UpdateUserEmailController {
         description: response.name,
       });
 
-    return Object(response);
+    return response;
   }
 }

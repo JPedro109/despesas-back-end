@@ -1,7 +1,9 @@
 import {
   Param,
+  Body,
   Controller,
-  Delete,
+  Put,
+  BadRequestException,
   NotFoundException,
   HttpCode,
   UseGuards,
@@ -14,24 +16,25 @@ import {
   getSchemaPath,
 } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
-import { AbstractDeleteExpenseUseCase } from '@/core/domain/expenses/abstracts';
-import { DeleteExpenseResponseDTO } from '@/core/domain/expenses/dtos';
+import { AbstractUpdateExpenseUseCase } from '@/core/domain/expenses/abstracts';
+import { UpdateExpenseResponseDTO } from '@/core/domain/expenses/dtos';
 import { NotFoundError } from '@/core/errors';
 import {
-  DeleteExpenseParamsDTO,
   ErrorDTO,
   InternalServerErrorDTO,
+  UpdateExpenseParamsDTO,
+  UpdateExpenseUserBodyDTO,
 } from '@/infra/http/dtos';
 
 @ApiTags('Expenses')
 @Controller('api/expenses')
-export class DeleteExpenseController {
-  constructor(private readonly useCase: AbstractDeleteExpenseUseCase) {}
+export class UpdateExpenseRestController {
+  constructor(private readonly useCase: AbstractUpdateExpenseUseCase) {}
 
-  @ApiOperation({ summary: 'Deletar despesa' })
+  @ApiOperation({ summary: 'Atualizar despesa' })
   @ApiResponse({
     status: 200,
-    description: 'Rota de deleção de despesa',
+    description: 'Rota de atualização de despesa',
     type: String,
   })
   @ApiExtraModels(ErrorDTO)
@@ -66,18 +69,30 @@ export class DeleteExpenseController {
   })
   @UseGuards(AuthGuard('jwt'))
   @HttpCode(200)
-  @Delete(':id')
+  @Put(':id')
   async handle(
-    @Param() body: DeleteExpenseParamsDTO,
-  ): Promise<DeleteExpenseResponseDTO> {
-    const { id } = body;
+    @Param() param: UpdateExpenseParamsDTO,
+    @Body() body: UpdateExpenseUserBodyDTO,
+  ): Promise<UpdateExpenseResponseDTO> {
+    const { id } = param;
+
+    const { expenseName, expenseValue, dueDate } = body;
 
     const response = await this.useCase.execute({
       id,
+      expenseName,
+      expenseValue,
+      dueDate,
     });
 
     if (response instanceof NotFoundError)
       throw new NotFoundException(response.message, {
+        cause: response,
+        description: response.name,
+      });
+
+    if (response instanceof Error)
+      throw new BadRequestException(response.message, {
         cause: response,
         description: response.name,
       });

@@ -1,11 +1,11 @@
 import { BadRequestException, NotFoundException } from '@nestjs/common';
-import { UpdateUserPasswordController } from '@/infra/http/controllers';
+import { UpdateUserPasswordRestController } from '@/infra/http/controllers';
 import { NotFoundError } from '@/core/errors';
 import { UpdateUserPasswordStub } from './stubs';
 
 const makeSut = () => {
   const updateUserPasswordStub = new UpdateUserPasswordStub();
-  const sut = new UpdateUserPasswordController(updateUserPasswordStub);
+  const sut = new UpdateUserPasswordRestController(updateUserPasswordStub);
 
   return {
     sut,
@@ -27,7 +27,7 @@ const makeBody = (
   };
 };
 
-describe('Infra (Controller) - UpdateUserPasswordController', () => {
+describe('Infra (RestController) - UpdateUserPasswordRestController', () => {
   test('Should not update user password, because use case returned not found error', async () => {
     const body = makeBody('2', 'password', 'passwordone', 'passwordone');
     const { sut, updateUserPasswordStub } = makeSut();

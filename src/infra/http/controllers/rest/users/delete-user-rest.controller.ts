@@ -1,9 +1,11 @@
 import {
   Body,
   Controller,
-  Post,
-  UnauthorizedException,
+  Delete,
+  BadRequestException,
   HttpCode,
+  UseGuards,
+  Req,
 } from '@nestjs/common';
 import {
   ApiExtraModels,
@@ -12,24 +14,24 @@ import {
   ApiTags,
   getSchemaPath,
 } from '@nestjs/swagger';
-import { UnauthorizedError } from '@/core/errors';
-import { AbstractUserLoginUseCase } from '@/core/domain/users/abstracts';
-import { UserLoginResponseDTO } from '@/core/domain/users/dtos';
+import { AuthGuard } from '@nestjs/passport';
+import { AbstractDeleteUserUseCase } from '@/core/domain/users/abstracts';
+import { DeleteUserResponseDTO } from '@/core/domain/users/dtos';
 import {
+  DeleteUserBodyDTO,
   ErrorDTO,
   InternalServerErrorDTO,
-  UserLoginBodyDTO,
 } from '@/infra/http/dtos';
 
 @ApiTags('Users')
 @Controller('api/users')
-export class UserLoginController {
-  constructor(private readonly useCase: AbstractUserLoginUseCase) {}
+export class DeleteUserRestController {
+  constructor(private readonly useCase: AbstractDeleteUserUseCase) {}
 
-  @ApiOperation({ summary: 'Atualizar senha' })
+  @ApiOperation({ summary: 'Deletar usuário.' })
   @ApiResponse({
-    status: 200,
-    description: 'Rota de atualização de senha',
+    status: 201,
+    description: 'Rota de criação de usuário',
     type: String,
   })
   @ApiExtraModels(ErrorDTO)
@@ -40,13 +42,6 @@ export class UserLoginController {
     },
     description: 'DTO inválido ou erro na regras de negócio',
   })
-  @ApiResponse({
-    status: 401,
-    schema: {
-      $ref: getSchemaPath(ErrorDTO),
-    },
-    description: 'Usuário não autorizado',
-  })
   @ApiExtraModels(InternalServerErrorDTO)
   @ApiResponse({
     status: 500,
@@ -55,18 +50,25 @@ export class UserLoginController {
     },
     description: 'Erro no servidor',
   })
+  @UseGuards(AuthGuard('jwt'))
   @HttpCode(200)
-  @Post('login')
-  async handle(@Body() body: UserLoginBodyDTO): Promise<UserLoginResponseDTO> {
-    const { email, password } = body;
+  @Delete()
+  async handle(
+    @Req() req,
+    @Body() body: DeleteUserBodyDTO,
+  ): Promise<DeleteUserResponseDTO> {
+    const { password, passwordConfirm } = body;
+
+    const userId = req.user;
 
     const response = await this.useCase.execute({
-      email,
+      id: userId,
       password,
+      passwordConfirm,
     });
 
-    if (response instanceof UnauthorizedError)
-      throw new UnauthorizedException(response.message, {
+    if (response instanceof Error)
+      throw new BadRequestException(response.message, {
         cause: response,
         description: response.name,
       });

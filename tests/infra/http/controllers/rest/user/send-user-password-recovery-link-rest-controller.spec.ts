@@ -1,12 +1,12 @@
 import { BadRequestException, NotFoundException } from '@nestjs/common';
-import { SendUserPasswordRecoveryLinkController } from '@/infra/http/controllers';
+import { SendUserPasswordRecoveryLinkRestController } from '@/infra/http/controllers';
 import { InvalidParamError, NotFoundError } from '@/core/errors';
 import { SendUserPasswordRecoveryLinkStub } from './stubs';
 
 const makeSut = () => {
   const sendUserPasswordRecoveryLinkStub =
     new SendUserPasswordRecoveryLinkStub();
-  const sut = new SendUserPasswordRecoveryLinkController(
+  const sut = new SendUserPasswordRecoveryLinkRestController(
     sendUserPasswordRecoveryLinkStub,
   );
 
@@ -22,7 +22,7 @@ const makeBody = (email: string) => {
   };
 };
 
-describe('Infra (Controller) - SendUserPasswordRecoveryLinkController', () => {
+describe('Infra (RestController) - SendUserPasswordRecoveryLinkRestController', () => {
   test('Should not send user password recovery link, because use case returned invalid param error', async () => {
     const body = makeBody('email.com');
     const { sut, sendUserPasswordRecoveryLinkStub } = makeSut();

@@ -1,12 +1,12 @@
 import { BadRequestException, NotFoundException } from '@nestjs/common';
-import { UpdateExpenseController } from '@/infra/http/controllers';
+import { UpdateExpenseRestController } from '@/infra/http/controllers';
 import { NotFoundError } from '@/core/errors';
 import { testExpenseModel } from './datas';
 import { UpdateExpenseStub } from './stubs';
 
 const makeSut = () => {
   const updateExpenseStub = new UpdateExpenseStub();
-  const sut = new UpdateExpenseController(updateExpenseStub);
+  const sut = new UpdateExpenseRestController(updateExpenseStub);
 
   return {
     sut,
@@ -28,7 +28,7 @@ const makeBody = (
   };
 };
 
-describe('Infra (Controller) - UpdateExpenseController', () => {
+describe('Infra (RestController) - UpdateExpenseRestController', () => {
   test('Should not update expense, because use case returned not found error', async () => {
     const body = makeBody('2', 'expense', 100, '3000-01-01');
     const { sut, updateExpenseStub } = makeSut();

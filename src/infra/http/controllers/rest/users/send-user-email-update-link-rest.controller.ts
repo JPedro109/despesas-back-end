@@ -25,7 +25,7 @@ import {
 
 @ApiTags('Users')
 @Controller('api/users')
-export class SendUserEmailUpdateLinkController {
+export class SendUserEmailUpdateLinkRestController {
   constructor(
     private readonly useCase: AbstractSendUserEmailUpdateLinkUseCase,
   ) {}

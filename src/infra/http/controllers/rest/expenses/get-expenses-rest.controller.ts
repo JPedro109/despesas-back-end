@@ -9,11 +9,11 @@ import {
 import { AuthGuard } from '@nestjs/passport';
 import { AbstractGetExpensesUseCase } from '@/core/domain/expenses/abstracts';
 import { GetExpensesResponseDTO } from '@/core/domain/expenses/dtos';
-import { ErrorDTO, InternalServerErrorDTO } from '../../dtos';
+import { ErrorDTO, InternalServerErrorDTO } from '@/infra/http/dtos';
 
 @ApiTags('Expenses')
 @Controller('api/expenses')
-export class GetExpensesController {
+export class GetExpensesRestController {
   constructor(private readonly useCase: AbstractGetExpensesUseCase) {}
 
   @ApiOperation({ summary: 'Retornar despesas' })

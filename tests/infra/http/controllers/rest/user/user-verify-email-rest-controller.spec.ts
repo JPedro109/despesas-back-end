@@ -3,7 +3,7 @@ import {
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
-import { UserVerifyEmailController } from '@/infra/http/controllers';
+import { UserVerifyEmailRestController } from '@/infra/http/controllers';
 import { UserVerifyEmailStub } from './stubs';
 import {
   InvalidParamError,
@@ -13,7 +13,7 @@ import {
 
 const makeSut = () => {
   const userVerifyEmailStub = new UserVerifyEmailStub();
-  const sut = new UserVerifyEmailController(userVerifyEmailStub);
+  const sut = new UserVerifyEmailRestController(userVerifyEmailStub);
 
   return {
     sut,
@@ -28,7 +28,7 @@ const makeBody = (email: string, code: string) => {
   };
 };
 
-describe('Infra (Controller) - UserVerifyEmailController', () => {
+describe('Infra (RestController) - UserVerifyEmailRestController', () => {
   test('Should not verify email user, because use case returned not found error', async () => {
     const body = makeBody('email_invalid@test.com', 'code');
     const { sut, userVerifyEmailStub } = makeSut();

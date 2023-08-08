@@ -1,12 +1,12 @@
 import { BadRequestException, NotFoundException } from '@nestjs/common';
-import { DeleteExpenseController } from '@/infra/http/controllers';
+import { DeleteExpenseRestController } from '@/infra/http/controllers';
 import { NotFoundError } from '@/core/errors';
 import { testExpenseModel } from './datas';
 import { DeleteExpenseStub } from './stubs';
 
 const makeSut = () => {
   const deleteExpensesStub = new DeleteExpenseStub();
-  const sut = new DeleteExpenseController(deleteExpensesStub);
+  const sut = new DeleteExpenseRestController(deleteExpensesStub);
 
   return {
     sut,
@@ -20,7 +20,7 @@ const makeBody = (id: string) => {
   };
 };
 
-describe('Infra (Controller) - DeleteExpenseController', () => {
+describe('Infra (RestController) - DeleteExpenseRestController', () => {
   test('Should not delete expense, because use case returned not found error', async () => {
     const body = makeBody('2');
     const { sut, deleteExpensesStub } = makeSut();

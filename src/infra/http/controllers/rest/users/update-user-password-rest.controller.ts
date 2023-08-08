@@ -1,11 +1,12 @@
 import {
-  Body,
   Controller,
-  Post,
   BadRequestException,
   HttpCode,
+  Patch,
   UseGuards,
   Req,
+  Body,
+  NotFoundException,
 } from '@nestjs/common';
 import {
   ApiExtraModels,
@@ -14,24 +15,25 @@ import {
   ApiTags,
   getSchemaPath,
 } from '@nestjs/swagger';
+import { AbstractUpdateUserPasswordUseCase } from '@/core/domain/users/abstracts';
 import { AuthGuard } from '@nestjs/passport';
-import { AbstractCreateExpenseUseCase } from '@/core/domain/expenses/abstracts';
-import { CreateExpenseResponseDTO } from '@/core/domain/expenses/dtos';
+import { NotFoundError } from '@/core/errors';
+import { UpdateUserPasswordResponseDTO } from '@/core/domain/users/dtos';
 import {
-  CreateExpenseUserBodyDTO,
   ErrorDTO,
   InternalServerErrorDTO,
+  UpdateUserPasswordBodyDTO,
 } from '@/infra/http/dtos';
 
-@ApiTags('Expenses')
-@Controller('api/expenses')
-export class CreateExpenseController {
-  constructor(private readonly useCase: AbstractCreateExpenseUseCase) {}
+@ApiTags('Users')
+@Controller('api/users')
+export class UpdateUserPasswordRestController {
+  constructor(private readonly useCase: AbstractUpdateUserPasswordUseCase) {}
 
-  @ApiOperation({ summary: 'Criar despesa' })
+  @ApiOperation({ summary: 'Atualizar senha' })
   @ApiResponse({
-    status: 201,
-    description: 'Rota de criação de despesa',
+    status: 200,
+    description: 'Rota de atualização de senha',
     type: String,
   })
   @ApiExtraModels(ErrorDTO)
@@ -43,11 +45,11 @@ export class CreateExpenseController {
     description: 'DTO inválido ou erro na regras de negócio',
   })
   @ApiResponse({
-    status: 401,
+    status: 404,
     schema: {
       $ref: getSchemaPath(ErrorDTO),
     },
-    description: 'Usuário não autorizado',
+    description: 'Usuário não encontrado',
   })
   @ApiExtraModels(InternalServerErrorDTO)
   @ApiResponse({
@@ -58,22 +60,29 @@ export class CreateExpenseController {
     description: 'Erro no servidor',
   })
   @UseGuards(AuthGuard('jwt'))
-  @HttpCode(201)
-  @Post()
+  @HttpCode(200)
+  @Patch('password')
   async handle(
     @Req() req,
-    @Body() body: CreateExpenseUserBodyDTO,
-  ): Promise<CreateExpenseResponseDTO> {
-    const { expenseName, expenseValue, dueDate } = body;
+    @Body()
+    body: UpdateUserPasswordBodyDTO,
+  ): Promise<UpdateUserPasswordResponseDTO> {
+    const { password, newPassword, newPasswordConfirm } = body;
 
     const userId = req.user;
 
     const response = await this.useCase.execute({
-      expenseName,
-      expenseValue,
-      dueDate,
-      userId,
+      id: userId,
+      password,
+      newPassword,
+      newPasswordConfirm,
     });
+
+    if (response instanceof NotFoundError)
+      throw new NotFoundException(response.message, {
+        cause: response,
+        description: response.name,
+      });
 
     if (response instanceof Error)
       throw new BadRequestException(response.message, {
@@ -81,6 +90,6 @@ export class CreateExpenseController {
         description: response.name,
       });
 
-    return response;
+    return Object(response);
   }
 }

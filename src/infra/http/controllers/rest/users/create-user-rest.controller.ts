@@ -22,7 +22,7 @@ import {
 
 @ApiTags('Users')
 @Controller('api/users')
-export class CreateUserController {
+export class CreateUserRestController {
   constructor(private readonly useCase: AbstractCreateUserUseCase) {}
 
   @ApiOperation({ summary: 'Criar usuário' })

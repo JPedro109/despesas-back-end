@@ -1,11 +1,10 @@
 import {
-  Query,
+  Param,
   Controller,
-  Patch,
-  BadRequestException,
+  Delete,
   NotFoundException,
-  UnauthorizedException,
   HttpCode,
+  UseGuards,
 } from '@nestjs/common';
 import {
   ApiExtraModels,
@@ -14,24 +13,25 @@ import {
   ApiTags,
   getSchemaPath,
 } from '@nestjs/swagger';
-import { NotFoundError, UnauthorizedError } from '@/core/errors';
-import { AbstractUserVerifyEmailUseCase } from '@/core/domain/users/abstracts';
-import { UserVerifyEmailResponseDTO } from '@/core/domain/users/dtos';
+import { AuthGuard } from '@nestjs/passport';
+import { AbstractDeleteExpenseUseCase } from '@/core/domain/expenses/abstracts';
+import { DeleteExpenseResponseDTO } from '@/core/domain/expenses/dtos';
+import { NotFoundError } from '@/core/errors';
 import {
+  DeleteExpenseParamsDTO,
   ErrorDTO,
   InternalServerErrorDTO,
-  UserVerifyEmailQueryDTO,
 } from '@/infra/http/dtos';
 
-@ApiTags('Users')
-@Controller('api/users')
-export class UserVerifyEmailController {
-  constructor(private readonly useCase: AbstractUserVerifyEmailUseCase) {}
+@ApiTags('Expenses')
+@Controller('api/expenses')
+export class DeleteExpenseRestController {
+  constructor(private readonly useCase: AbstractDeleteExpenseUseCase) {}
 
-  @ApiOperation({ summary: 'Verificar email' })
+  @ApiOperation({ summary: 'Deletar despesa' })
   @ApiResponse({
     status: 200,
-    description: 'Rota de verificação de email',
+    description: 'Rota de deleção de despesa',
     type: String,
   })
   @ApiExtraModels(ErrorDTO)
@@ -54,7 +54,7 @@ export class UserVerifyEmailController {
     schema: {
       $ref: getSchemaPath(ErrorDTO),
     },
-    description: 'Usuário não encontrado',
+    description: 'Despesa não encontrada',
   })
   @ApiExtraModels(InternalServerErrorDTO)
   @ApiResponse({
@@ -64,16 +64,16 @@ export class UserVerifyEmailController {
     },
     description: 'Erro no servidor',
   })
+  @UseGuards(AuthGuard('jwt'))
   @HttpCode(200)
-  @Patch('verify-email')
+  @Delete(':id')
   async handle(
-    @Query() query: UserVerifyEmailQueryDTO,
-  ): Promise<UserVerifyEmailResponseDTO> {
-    const { email, code } = query;
+    @Param() body: DeleteExpenseParamsDTO,
+  ): Promise<DeleteExpenseResponseDTO> {
+    const { id } = body;
 
     const response = await this.useCase.execute({
-      email,
-      code,
+      id,
     });
 
     if (response instanceof NotFoundError)
@@ -82,18 +82,6 @@ export class UserVerifyEmailController {
         description: response.name,
       });
 
-    if (response instanceof UnauthorizedError)
-      throw new UnauthorizedException(response.message, {
-        cause: response,
-        description: response.name,
-      });
-
-    if (response instanceof Error)
-      throw new BadRequestException(response.message, {
-        cause: response,
-        description: response.name,
-      });
-
-    return Object(response);
+    return response;
   }
 }

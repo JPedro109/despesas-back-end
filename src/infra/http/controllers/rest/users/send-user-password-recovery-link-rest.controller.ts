@@ -1,10 +1,8 @@
 import {
   Body,
   Controller,
-  BadRequestException,
   NotFoundException,
   HttpCode,
-  Query,
   Patch,
 } from '@nestjs/common';
 import {
@@ -15,24 +13,25 @@ import {
   getSchemaPath,
 } from '@nestjs/swagger';
 import { NotFoundError } from '@/core/errors';
-import { AbstractRecoverUserPasswordUseCase } from '@/core/domain/users/abstracts';
-import { RecoverUserPasswordResponseDTO } from '@/core/domain/users/dtos';
+import { AbstractSendUserPasswordRecoveryLinkUseCase } from '@/core/domain/users/abstracts';
+import { SendUserPasswordRecoveryLinkResponseDTO } from '@/core/domain/users/dtos';
 import {
-  RecoverUserPasswordQueryDTO,
-  RecoverUserPasswordBodyDTO,
   ErrorDTO,
   InternalServerErrorDTO,
+  SendUserPasswordRecoveryLinkBodyDTO,
 } from '@/infra/http/dtos';
 
 @ApiTags('Users')
 @Controller('api/users')
-export class RecoverUserPasswordController {
-  constructor(private readonly useCase: AbstractRecoverUserPasswordUseCase) {}
+export class SendUserPasswordRecoveryLinkRestController {
+  constructor(
+    private readonly useCase: AbstractSendUserPasswordRecoveryLinkUseCase,
+  ) {}
 
-  @ApiOperation({ summary: 'Recuperar senha do usuário.' })
+  @ApiOperation({ summary: 'Enviar link de recuperação de senha.' })
   @ApiResponse({
-    status: 201,
-    description: 'Rota de recuperação de senha do usuário',
+    status: 200,
+    description: 'Rota de envio do link de recuperação de senha',
     type: String,
   })
   @ApiExtraModels(ErrorDTO)
@@ -59,21 +58,15 @@ export class RecoverUserPasswordController {
     description: 'Erro no servidor',
   })
   @HttpCode(200)
-  @Patch('password-recover')
+  @Patch('send-password-recovery-link')
   async handle(
-    @Query()
-    query: RecoverUserPasswordQueryDTO,
     @Body()
-    body: RecoverUserPasswordBodyDTO,
-  ): Promise<RecoverUserPasswordResponseDTO> {
-    const { password, passwordConfirm } = body;
-    const { email, code } = query;
+    body: SendUserPasswordRecoveryLinkBodyDTO,
+  ): Promise<SendUserPasswordRecoveryLinkResponseDTO> {
+    const { email } = body;
 
     const response = await this.useCase.execute({
       email,
-      code,
-      password,
-      passwordConfirm,
     });
 
     if (response instanceof NotFoundError)
@@ -81,13 +74,6 @@ export class RecoverUserPasswordController {
         cause: response,
         description: response.name,
       });
-
-    if (response instanceof Error) {
-      throw new BadRequestException(response.message, {
-        cause: response,
-        description: response.name,
-      });
-    }
 
     return Object(response);
   }

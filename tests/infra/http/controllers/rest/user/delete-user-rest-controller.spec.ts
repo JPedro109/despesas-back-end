@@ -1,11 +1,11 @@
 import { BadRequestException } from '@nestjs/common';
-import { DeleteUserController } from '@/infra/http/controllers';
+import { DeleteUserRestController } from '@/infra/http/controllers';
 import { InvalidParamError, NotFoundError } from '@/core/errors';
 import { DeleteUserStub } from './stubs';
 
 const makeSut = () => {
   const deleteUserStub = new DeleteUserStub();
-  const sut = new DeleteUserController(deleteUserStub);
+  const sut = new DeleteUserRestController(deleteUserStub);
 
   return {
     sut,
@@ -21,7 +21,7 @@ const makeBody = (id: string, password: string, passwordConfirm: string) => {
   };
 };
 
-describe('Infra (Controller) - DeleteUserController', () => {
+describe('Infra (RestController) - DeleteUserRestController', () => {
   test('Should not delete user, because use case returned invalid param error', async () => {
     const body = makeBody('1', 'password', 'password');
     const { sut, deleteUserStub } = makeSut();

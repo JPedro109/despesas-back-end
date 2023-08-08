@@ -1,9 +1,12 @@
 import {
-  Body,
+  Query,
   Controller,
-  NotFoundException,
   HttpCode,
   Patch,
+  BadRequestException,
+  UseGuards,
+  Req,
+  NotFoundException,
 } from '@nestjs/common';
 import {
   ApiExtraModels,
@@ -12,26 +15,25 @@ import {
   ApiTags,
   getSchemaPath,
 } from '@nestjs/swagger';
-import { NotFoundError } from '@/core/errors';
-import { AbstractSendUserPasswordRecoveryLinkUseCase } from '@/core/domain/users/abstracts';
-import { SendUserPasswordRecoveryLinkResponseDTO } from '@/core/domain/users/dtos';
+import { AuthGuard } from '@nestjs/passport';
+import { AbstractUpdateUserEmailUseCase } from '@/core/domain/users/abstracts';
+import { UpdateUserEmailResponseDTO } from '@/core/domain/users/dtos';
 import {
   ErrorDTO,
   InternalServerErrorDTO,
-  SendUserPasswordRecoveryLinkBodyDTO,
+  UpdateUserEmailBodyDTO,
 } from '@/infra/http/dtos';
+import { NotFoundError } from '@/core/errors';
 
 @ApiTags('Users')
 @Controller('api/users')
-export class SendUserPasswordRecoveryLinkController {
-  constructor(
-    private readonly useCase: AbstractSendUserPasswordRecoveryLinkUseCase,
-  ) {}
+export class UpdateUserEmailRestController {
+  constructor(private readonly useCase: AbstractUpdateUserEmailUseCase) {}
 
-  @ApiOperation({ summary: 'Enviar link de recuperação de senha.' })
+  @ApiOperation({ summary: 'Atualizar email' })
   @ApiResponse({
     status: 200,
-    description: 'Rota de envio do link de recuperação de senha',
+    description: 'Rota de atualização de email',
     type: String,
   })
   @ApiExtraModels(ErrorDTO)
@@ -57,20 +59,32 @@ export class SendUserPasswordRecoveryLinkController {
     },
     description: 'Erro no servidor',
   })
+  @UseGuards(AuthGuard('jwt'))
   @HttpCode(200)
-  @Patch('send-password-recovery-link')
+  @Patch('email')
   async handle(
-    @Body()
-    body: SendUserPasswordRecoveryLinkBodyDTO,
-  ): Promise<SendUserPasswordRecoveryLinkResponseDTO> {
-    const { email } = body;
+    @Req() req,
+    @Query()
+    body: UpdateUserEmailBodyDTO,
+  ): Promise<UpdateUserEmailResponseDTO> {
+    const { email, code } = body;
+
+    const userId = req.user;
 
     const response = await this.useCase.execute({
+      id: userId,
       email,
+      code,
     });
 
     if (response instanceof NotFoundError)
       throw new NotFoundException(response.message, {
+        cause: response,
+        description: response.name,
+      });
+
+    if (response instanceof Error)
+      throw new BadRequestException(response.message, {
         cause: response,
         description: response.name,
       });

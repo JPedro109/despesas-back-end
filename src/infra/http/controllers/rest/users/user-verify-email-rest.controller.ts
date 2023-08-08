@@ -1,12 +1,11 @@
 import {
-  Param,
-  Body,
+  Query,
   Controller,
-  Put,
+  Patch,
   BadRequestException,
   NotFoundException,
+  UnauthorizedException,
   HttpCode,
-  UseGuards,
 } from '@nestjs/common';
 import {
   ApiExtraModels,
@@ -15,26 +14,24 @@ import {
   ApiTags,
   getSchemaPath,
 } from '@nestjs/swagger';
-import { AuthGuard } from '@nestjs/passport';
-import { AbstractUpdateExpenseUseCase } from '@/core/domain/expenses/abstracts';
-import { UpdateExpenseResponseDTO } from '@/core/domain/expenses/dtos';
-import { NotFoundError } from '@/core/errors';
+import { NotFoundError, UnauthorizedError } from '@/core/errors';
+import { AbstractUserVerifyEmailUseCase } from '@/core/domain/users/abstracts';
+import { UserVerifyEmailResponseDTO } from '@/core/domain/users/dtos';
 import {
   ErrorDTO,
   InternalServerErrorDTO,
-  UpdateExpenseParamsDTO,
-  UpdateExpenseUserBodyDTO,
+  UserVerifyEmailQueryDTO,
 } from '@/infra/http/dtos';
 
-@ApiTags('Expenses')
-@Controller('api/expenses')
-export class UpdateExpenseController {
-  constructor(private readonly useCase: AbstractUpdateExpenseUseCase) {}
+@ApiTags('Users')
+@Controller('api/users')
+export class UserVerifyEmailRestController {
+  constructor(private readonly useCase: AbstractUserVerifyEmailUseCase) {}
 
-  @ApiOperation({ summary: 'Atualizar despesa' })
+  @ApiOperation({ summary: 'Verificar email' })
   @ApiResponse({
     status: 200,
-    description: 'Rota de atualização de despesa',
+    description: 'Rota de verificação de email',
     type: String,
   })
   @ApiExtraModels(ErrorDTO)
@@ -57,7 +54,7 @@ export class UpdateExpenseController {
     schema: {
       $ref: getSchemaPath(ErrorDTO),
     },
-    description: 'Despesa não encontrada',
+    description: 'Usuário não encontrado',
   })
   @ApiExtraModels(InternalServerErrorDTO)
   @ApiResponse({
@@ -67,26 +64,26 @@ export class UpdateExpenseController {
     },
     description: 'Erro no servidor',
   })
-  @UseGuards(AuthGuard('jwt'))
   @HttpCode(200)
-  @Put(':id')
+  @Patch('verify-email')
   async handle(
-    @Param() param: UpdateExpenseParamsDTO,
-    @Body() body: UpdateExpenseUserBodyDTO,
-  ): Promise<UpdateExpenseResponseDTO> {
-    const { id } = param;
-
-    const { expenseName, expenseValue, dueDate } = body;
+    @Query() query: UserVerifyEmailQueryDTO,
+  ): Promise<UserVerifyEmailResponseDTO> {
+    const { email, code } = query;
 
     const response = await this.useCase.execute({
-      id,
-      expenseName,
-      expenseValue,
-      dueDate,
+      email,
+      code,
     });
 
     if (response instanceof NotFoundError)
       throw new NotFoundException(response.message, {
+        cause: response,
+        description: response.name,
+      });
+
+    if (response instanceof UnauthorizedError)
+      throw new UnauthorizedException(response.message, {
         cause: response,
         description: response.name,
       });
@@ -97,6 +94,6 @@ export class UpdateExpenseController {
         description: response.name,
       });
 
-    return response;
+    return Object(response);
   }
 }

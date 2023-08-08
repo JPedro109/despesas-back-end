@@ -1,11 +1,11 @@
 import { BadRequestException, NotFoundException } from '@nestjs/common';
-import { RecoverUserPasswordController } from '@/infra/http/controllers';
+import { RecoverUserPasswordRestController } from '@/infra/http/controllers';
 import { InvalidParamError, NotFoundError } from '@/core/errors';
 import { RecoverUserPasswordStub } from './stubs';
 
 const makeSut = () => {
   const recoverUserPasswordStub = new RecoverUserPasswordStub();
-  const sut = new RecoverUserPasswordController(recoverUserPasswordStub);
+  const sut = new RecoverUserPasswordRestController(recoverUserPasswordStub);
 
   return {
     sut,
@@ -27,7 +27,7 @@ const makeBody = (
   };
 };
 
-describe('Infra (Controller) - RecoverUserPasswordController', () => {
+describe('Infra (RestController) - RecoverUserPasswordRestController', () => {
   test('Should not recover user password, because use case returned invalid param error', async () => {
     const body = makeBody(
       'email@test.com',
