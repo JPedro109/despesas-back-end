@@ -11,7 +11,7 @@
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"tests/**/*.ts\"",
     "start:dev": "yarn migrate:execute && nest start",
-    "start:dev:watch": "nest start:dev --watch",
+    "start:dev:watch": "yarn migrate:execute && nest start --watch",
     "start:debug": "nest start --debug --watch",
     "start": "yarn migrate:execute && yarn build && node dist/main",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
