@@ -1,6 +1,6 @@
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ValidationPipeCustom } from '@/custom';
+import { ValidationPipeCustom } from '@/shared/custom';
 import { HttpModule, DatabaseModule } from '@/infra';
 import { DatabaseService, MockRepository } from '@/infra/database/prisma';
 import { QueueHelper } from '@/infra/queue/helper';
