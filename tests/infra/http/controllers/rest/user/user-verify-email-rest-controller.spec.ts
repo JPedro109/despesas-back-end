@@ -3,7 +3,7 @@ import {
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
-import { UserVerifyEmailRestController } from '@/infra/http/controllers';
+import { UserVerifyEmailRestController } from '@/infra/http/rest/controllers';
 import { UserVerifyEmailStub } from './stubs';
 import {
   InvalidParamError,

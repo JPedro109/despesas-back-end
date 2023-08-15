@@ -1,9 +1,9 @@
 import {
   Body,
   Controller,
-  Post,
-  UnauthorizedException,
+  NotFoundException,
   HttpCode,
+  Patch,
 } from '@nestjs/common';
 import {
   ApiExtraModels,
@@ -12,24 +12,26 @@ import {
   ApiTags,
   getSchemaPath,
 } from '@nestjs/swagger';
-import { UnauthorizedError } from '@/core/errors';
-import { AbstractUserLoginUseCase } from '@/core/domain/users/abstracts';
-import { UserLoginResponseDTO } from '@/core/domain/users/dtos';
+import { NotFoundError } from '@/core/errors';
+import { AbstractSendUserPasswordRecoveryLinkUseCase } from '@/core/domain/users/abstracts';
+import { SendUserPasswordRecoveryLinkResponseDTO } from '@/core/domain/users/dtos';
 import {
   ErrorDTO,
   InternalServerErrorDTO,
-  UserLoginBodyDTO,
-} from '@/infra/http/dtos';
+  SendUserPasswordRecoveryLinkBodyDTO,
+} from '@/infra/http/rest/dtos';
 
 @ApiTags('Users')
 @Controller('api/users')
-export class UserLoginRestController {
-  constructor(private readonly useCase: AbstractUserLoginUseCase) {}
+export class SendUserPasswordRecoveryLinkRestController {
+  constructor(
+    private readonly useCase: AbstractSendUserPasswordRecoveryLinkUseCase,
+  ) {}
 
-  @ApiOperation({ summary: 'Atualizar senha' })
+  @ApiOperation({ summary: 'Enviar link de recuperação de senha.' })
   @ApiResponse({
     status: 200,
-    description: 'Rota de atualização de senha',
+    description: 'Rota de envio do link de recuperação de senha',
     type: String,
   })
   @ApiExtraModels(ErrorDTO)
@@ -41,11 +43,11 @@ export class UserLoginRestController {
     description: 'DTO inválido ou erro na regras de negócio',
   })
   @ApiResponse({
-    status: 401,
+    status: 404,
     schema: {
       $ref: getSchemaPath(ErrorDTO),
     },
-    description: 'Usuário não autorizado',
+    description: 'Usuário não encontrado',
   })
   @ApiExtraModels(InternalServerErrorDTO)
   @ApiResponse({
@@ -56,17 +58,19 @@ export class UserLoginRestController {
     description: 'Erro no servidor',
   })
   @HttpCode(200)
-  @Post('login')
-  async handle(@Body() body: UserLoginBodyDTO): Promise<UserLoginResponseDTO> {
-    const { email, password } = body;
+  @Patch('send-password-recovery-link')
+  async handle(
+    @Body()
+    body: SendUserPasswordRecoveryLinkBodyDTO,
+  ): Promise<SendUserPasswordRecoveryLinkResponseDTO> {
+    const { email } = body;
 
     const response = await this.useCase.execute({
       email,
-      password,
     });
 
-    if (response instanceof UnauthorizedError)
-      throw new UnauthorizedException(response.message, {
+    if (response instanceof NotFoundError)
+      throw new NotFoundException(response.message, {
         cause: response,
         description: response.name,
       });

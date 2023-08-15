@@ -1,5 +1,5 @@
 import { BadRequestException } from '@nestjs/common';
-import { SendUserEmailUpdateLinkRestController } from '@/infra/http/controllers';
+import { SendUserEmailUpdateLinkRestController } from '@/infra/http/rest/controllers';
 import { SendUserEmailUpdateLinkStub } from './stubs';
 
 const makeSut = () => {

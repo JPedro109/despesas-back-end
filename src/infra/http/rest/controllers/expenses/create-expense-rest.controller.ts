@@ -1,7 +1,7 @@
 import {
   Body,
   Controller,
-  Delete,
+  Post,
   BadRequestException,
   HttpCode,
   UseGuards,
@@ -15,23 +15,23 @@ import {
   getSchemaPath,
 } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
-import { AbstractDeleteUserUseCase } from '@/core/domain/users/abstracts';
-import { DeleteUserResponseDTO } from '@/core/domain/users/dtos';
+import { AbstractCreateExpenseUseCase } from '@/core/domain/expenses/abstracts';
+import { CreateExpenseResponseDTO } from '@/core/domain/expenses/dtos';
 import {
-  DeleteUserBodyDTO,
+  CreateExpenseUserBodyDTO,
   ErrorDTO,
   InternalServerErrorDTO,
-} from '@/infra/http/dtos';
+} from '@/infra/http/rest/dtos';
 
-@ApiTags('Users')
-@Controller('api/users')
-export class DeleteUserRestController {
-  constructor(private readonly useCase: AbstractDeleteUserUseCase) {}
+@ApiTags('Expenses')
+@Controller('api/expenses')
+export class CreateExpenseRestController {
+  constructor(private readonly useCase: AbstractCreateExpenseUseCase) {}
 
-  @ApiOperation({ summary: 'Deletar usuário.' })
+  @ApiOperation({ summary: 'Criar despesa' })
   @ApiResponse({
     status: 201,
-    description: 'Rota de criação de usuário',
+    description: 'Rota de criação de despesa',
     type: String,
   })
   @ApiExtraModels(ErrorDTO)
@@ -42,6 +42,13 @@ export class DeleteUserRestController {
     },
     description: 'DTO inválido ou erro na regras de negócio',
   })
+  @ApiResponse({
+    status: 401,
+    schema: {
+      $ref: getSchemaPath(ErrorDTO),
+    },
+    description: 'Usuário não autorizado',
+  })
   @ApiExtraModels(InternalServerErrorDTO)
   @ApiResponse({
     status: 500,
@@ -51,20 +58,21 @@ export class DeleteUserRestController {
     description: 'Erro no servidor',
   })
   @UseGuards(AuthGuard('jwt'))
-  @HttpCode(200)
-  @Delete()
+  @HttpCode(201)
+  @Post()
   async handle(
     @Req() req,
-    @Body() body: DeleteUserBodyDTO,
-  ): Promise<DeleteUserResponseDTO> {
-    const { password, passwordConfirm } = body;
+    @Body() body: CreateExpenseUserBodyDTO,
+  ): Promise<CreateExpenseResponseDTO> {
+    const { expenseName, expenseValue, dueDate } = body;
 
     const userId = req.user;
 
     const response = await this.useCase.execute({
-      id: userId,
-      password,
-      passwordConfirm,
+      expenseName,
+      expenseValue,
+      dueDate,
+      userId,
     });
 
     if (response instanceof Error)
@@ -73,6 +81,6 @@ export class DeleteUserRestController {
         description: response.name,
       });
 
-    return Object(response);
+    return response;
   }
 }

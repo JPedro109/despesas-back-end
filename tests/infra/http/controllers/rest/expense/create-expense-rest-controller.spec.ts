@@ -1,5 +1,5 @@
 import { BadRequestException } from '@nestjs/common';
-import { CreateExpenseRestController } from '@/infra/http/controllers';
+import { CreateExpenseRestController } from '@/infra/http/rest/controllers';
 import { testExpenseModel } from './datas';
 import { CreateExpenseStub } from './stubs';
 

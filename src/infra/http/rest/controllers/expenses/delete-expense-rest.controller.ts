@@ -1,9 +1,10 @@
 import {
-  Body,
+  Param,
   Controller,
+  Delete,
   NotFoundException,
   HttpCode,
-  Patch,
+  UseGuards,
 } from '@nestjs/common';
 import {
   ApiExtraModels,
@@ -12,26 +13,25 @@ import {
   ApiTags,
   getSchemaPath,
 } from '@nestjs/swagger';
+import { AuthGuard } from '@nestjs/passport';
+import { AbstractDeleteExpenseUseCase } from '@/core/domain/expenses/abstracts';
+import { DeleteExpenseResponseDTO } from '@/core/domain/expenses/dtos';
 import { NotFoundError } from '@/core/errors';
-import { AbstractSendUserPasswordRecoveryLinkUseCase } from '@/core/domain/users/abstracts';
-import { SendUserPasswordRecoveryLinkResponseDTO } from '@/core/domain/users/dtos';
 import {
+  DeleteExpenseParamsDTO,
   ErrorDTO,
   InternalServerErrorDTO,
-  SendUserPasswordRecoveryLinkBodyDTO,
-} from '@/infra/http/dtos';
+} from '@/infra/http/rest/dtos';
 
-@ApiTags('Users')
-@Controller('api/users')
-export class SendUserPasswordRecoveryLinkRestController {
-  constructor(
-    private readonly useCase: AbstractSendUserPasswordRecoveryLinkUseCase,
-  ) {}
+@ApiTags('Expenses')
+@Controller('api/expenses')
+export class DeleteExpenseRestController {
+  constructor(private readonly useCase: AbstractDeleteExpenseUseCase) {}
 
-  @ApiOperation({ summary: 'Enviar link de recuperação de senha.' })
+  @ApiOperation({ summary: 'Deletar despesa' })
   @ApiResponse({
     status: 200,
-    description: 'Rota de envio do link de recuperação de senha',
+    description: 'Rota de deleção de despesa',
     type: String,
   })
   @ApiExtraModels(ErrorDTO)
@@ -43,11 +43,18 @@ export class SendUserPasswordRecoveryLinkRestController {
     description: 'DTO inválido ou erro na regras de negócio',
   })
   @ApiResponse({
+    status: 401,
+    schema: {
+      $ref: getSchemaPath(ErrorDTO),
+    },
+    description: 'Usuário não autorizado',
+  })
+  @ApiResponse({
     status: 404,
     schema: {
       $ref: getSchemaPath(ErrorDTO),
     },
-    description: 'Usuário não encontrado',
+    description: 'Despesa não encontrada',
   })
   @ApiExtraModels(InternalServerErrorDTO)
   @ApiResponse({
@@ -57,16 +64,16 @@ export class SendUserPasswordRecoveryLinkRestController {
     },
     description: 'Erro no servidor',
   })
+  @UseGuards(AuthGuard('jwt'))
   @HttpCode(200)
-  @Patch('send-password-recovery-link')
+  @Delete(':id')
   async handle(
-    @Body()
-    body: SendUserPasswordRecoveryLinkBodyDTO,
-  ): Promise<SendUserPasswordRecoveryLinkResponseDTO> {
-    const { email } = body;
+    @Param() body: DeleteExpenseParamsDTO,
+  ): Promise<DeleteExpenseResponseDTO> {
+    const { id } = body;
 
     const response = await this.useCase.execute({
-      email,
+      id,
     });
 
     if (response instanceof NotFoundError)
@@ -75,6 +82,6 @@ export class SendUserPasswordRecoveryLinkRestController {
         description: response.name,
       });
 
-    return Object(response);
+    return response;
   }
 }

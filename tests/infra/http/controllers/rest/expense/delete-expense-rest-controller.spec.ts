@@ -1,5 +1,5 @@
 import { BadRequestException, NotFoundException } from '@nestjs/common';
-import { DeleteExpenseRestController } from '@/infra/http/controllers';
+import { DeleteExpenseRestController } from '@/infra/http/rest/controllers';
 import { NotFoundError } from '@/core/errors';
 import { testExpenseModel } from './datas';
 import { DeleteExpenseStub } from './stubs';

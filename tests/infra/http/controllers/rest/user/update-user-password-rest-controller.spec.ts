@@ -1,5 +1,5 @@
 import { BadRequestException, NotFoundException } from '@nestjs/common';
-import { UpdateUserPasswordRestController } from '@/infra/http/controllers';
+import { UpdateUserPasswordRestController } from '@/infra/http/rest/controllers';
 import { NotFoundError } from '@/core/errors';
 import { UpdateUserPasswordStub } from './stubs';
 

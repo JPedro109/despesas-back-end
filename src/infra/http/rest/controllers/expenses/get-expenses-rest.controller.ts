@@ -1,11 +1,4 @@
-import {
-  Param,
-  Controller,
-  Delete,
-  NotFoundException,
-  HttpCode,
-  UseGuards,
-} from '@nestjs/common';
+import { Controller, Get, HttpCode, UseGuards, Req } from '@nestjs/common';
 import {
   ApiExtraModels,
   ApiOperation,
@@ -14,24 +7,19 @@ import {
   getSchemaPath,
 } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
-import { AbstractDeleteExpenseUseCase } from '@/core/domain/expenses/abstracts';
-import { DeleteExpenseResponseDTO } from '@/core/domain/expenses/dtos';
-import { NotFoundError } from '@/core/errors';
-import {
-  DeleteExpenseParamsDTO,
-  ErrorDTO,
-  InternalServerErrorDTO,
-} from '@/infra/http/dtos';
+import { AbstractGetExpensesUseCase } from '@/core/domain/expenses/abstracts';
+import { GetExpensesResponseDTO } from '@/core/domain/expenses/dtos';
+import { ErrorDTO, InternalServerErrorDTO } from '@/infra/http/rest/dtos';
 
 @ApiTags('Expenses')
 @Controller('api/expenses')
-export class DeleteExpenseRestController {
-  constructor(private readonly useCase: AbstractDeleteExpenseUseCase) {}
+export class GetExpensesRestController {
+  constructor(private readonly useCase: AbstractGetExpensesUseCase) {}
 
-  @ApiOperation({ summary: 'Deletar despesa' })
+  @ApiOperation({ summary: 'Retornar despesas' })
   @ApiResponse({
     status: 200,
-    description: 'Rota de deleção de despesa',
+    description: 'Rota de retorno de despesas',
     type: String,
   })
   @ApiExtraModels(ErrorDTO)
@@ -66,21 +54,13 @@ export class DeleteExpenseRestController {
   })
   @UseGuards(AuthGuard('jwt'))
   @HttpCode(200)
-  @Delete(':id')
-  async handle(
-    @Param() body: DeleteExpenseParamsDTO,
-  ): Promise<DeleteExpenseResponseDTO> {
-    const { id } = body;
+  @Get()
+  async handle(@Req() req): Promise<GetExpensesResponseDTO> {
+    const userId = req.user;
 
     const response = await this.useCase.execute({
-      id,
+      userId,
     });
-
-    if (response instanceof NotFoundError)
-      throw new NotFoundException(response.message, {
-        cause: response,
-        description: response.name,
-      });
 
     return response;
   }

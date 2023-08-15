@@ -16,7 +16,7 @@ import {
   UpdateUserPasswordRestController,
   UserLoginRestController,
   UserVerifyEmailRestController,
-} from './controllers';
+} from './rest/controllers';
 
 @Module({
   imports: [UsersModule, ExpensesModule, AuthenticationModule],

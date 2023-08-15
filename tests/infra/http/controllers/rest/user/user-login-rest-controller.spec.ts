@@ -1,5 +1,5 @@
 import { BadRequestException } from '@nestjs/common';
-import { UserLoginRestController } from '@/infra/http/controllers';
+import { UserLoginRestController } from '@/infra/http/rest/controllers';
 import { UserLoginStub } from './stubs';
 
 const makeSut = () => {

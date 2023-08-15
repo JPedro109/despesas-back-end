@@ -1,4 +1,4 @@
-import { GetExpensesRestController } from '@/infra/http/controllers';
+import { GetExpensesRestController } from '@/infra/http/rest/controllers';
 import { testExpenseModel } from './datas';
 import { GetExpensesStub } from './stubs';
 

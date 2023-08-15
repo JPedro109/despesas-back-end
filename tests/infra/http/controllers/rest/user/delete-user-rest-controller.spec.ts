@@ -1,5 +1,5 @@
 import { BadRequestException } from '@nestjs/common';
-import { DeleteUserRestController } from '@/infra/http/controllers';
+import { DeleteUserRestController } from '@/infra/http/rest/controllers';
 import { InvalidParamError, NotFoundError } from '@/core/errors';
 import { DeleteUserStub } from './stubs';
 

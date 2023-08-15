@@ -1,12 +1,12 @@
 import {
-  Query,
+  Param,
+  Body,
   Controller,
-  HttpCode,
-  Patch,
+  Put,
   BadRequestException,
-  UseGuards,
-  Req,
   NotFoundException,
+  HttpCode,
+  UseGuards,
 } from '@nestjs/common';
 import {
   ApiExtraModels,
@@ -16,24 +16,25 @@ import {
   getSchemaPath,
 } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
-import { AbstractUpdateUserEmailUseCase } from '@/core/domain/users/abstracts';
-import { UpdateUserEmailResponseDTO } from '@/core/domain/users/dtos';
+import { AbstractUpdateExpenseUseCase } from '@/core/domain/expenses/abstracts';
+import { UpdateExpenseResponseDTO } from '@/core/domain/expenses/dtos';
+import { NotFoundError } from '@/core/errors';
 import {
   ErrorDTO,
   InternalServerErrorDTO,
-  UpdateUserEmailBodyDTO,
-} from '@/infra/http/dtos';
-import { NotFoundError } from '@/core/errors';
+  UpdateExpenseParamsDTO,
+  UpdateExpenseUserBodyDTO,
+} from '@/infra/http/rest/dtos';
 
-@ApiTags('Users')
-@Controller('api/users')
-export class UpdateUserEmailRestController {
-  constructor(private readonly useCase: AbstractUpdateUserEmailUseCase) {}
+@ApiTags('Expenses')
+@Controller('api/expenses')
+export class UpdateExpenseRestController {
+  constructor(private readonly useCase: AbstractUpdateExpenseUseCase) {}
 
-  @ApiOperation({ summary: 'Atualizar email' })
+  @ApiOperation({ summary: 'Atualizar despesa' })
   @ApiResponse({
     status: 200,
-    description: 'Rota de atualização de email',
+    description: 'Rota de atualização de despesa',
     type: String,
   })
   @ApiExtraModels(ErrorDTO)
@@ -45,11 +46,18 @@ export class UpdateUserEmailRestController {
     description: 'DTO inválido ou erro na regras de negócio',
   })
   @ApiResponse({
+    status: 401,
+    schema: {
+      $ref: getSchemaPath(ErrorDTO),
+    },
+    description: 'Usuário não autorizado',
+  })
+  @ApiResponse({
     status: 404,
     schema: {
       $ref: getSchemaPath(ErrorDTO),
     },
-    description: 'Usuário não encontrado',
+    description: 'Despesa não encontrada',
   })
   @ApiExtraModels(InternalServerErrorDTO)
   @ApiResponse({
@@ -61,20 +69,20 @@ export class UpdateUserEmailRestController {
   })
   @UseGuards(AuthGuard('jwt'))
   @HttpCode(200)
-  @Patch('email')
+  @Put(':id')
   async handle(
-    @Req() req,
-    @Query()
-    body: UpdateUserEmailBodyDTO,
-  ): Promise<UpdateUserEmailResponseDTO> {
-    const { email, code } = body;
+    @Param() param: UpdateExpenseParamsDTO,
+    @Body() body: UpdateExpenseUserBodyDTO,
+  ): Promise<UpdateExpenseResponseDTO> {
+    const { id } = param;
 
-    const userId = req.user;
+    const { expenseName, expenseValue, dueDate } = body;
 
     const response = await this.useCase.execute({
-      id: userId,
-      email,
-      code,
+      id,
+      expenseName,
+      expenseValue,
+      dueDate,
     });
 
     if (response instanceof NotFoundError)
@@ -89,6 +97,6 @@ export class UpdateUserEmailRestController {
         description: response.name,
       });
 
-    return Object(response);
+    return response;
   }
 }

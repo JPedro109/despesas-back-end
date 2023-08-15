@@ -1,12 +1,12 @@
 import {
-  Param,
-  Body,
   Controller,
-  Put,
   BadRequestException,
-  NotFoundException,
   HttpCode,
+  Patch,
   UseGuards,
+  Req,
+  Body,
+  NotFoundException,
 } from '@nestjs/common';
 import {
   ApiExtraModels,
@@ -15,26 +15,25 @@ import {
   ApiTags,
   getSchemaPath,
 } from '@nestjs/swagger';
+import { AbstractUpdateUserPasswordUseCase } from '@/core/domain/users/abstracts';
 import { AuthGuard } from '@nestjs/passport';
-import { AbstractUpdateExpenseUseCase } from '@/core/domain/expenses/abstracts';
-import { UpdateExpenseResponseDTO } from '@/core/domain/expenses/dtos';
 import { NotFoundError } from '@/core/errors';
+import { UpdateUserPasswordResponseDTO } from '@/core/domain/users/dtos';
 import {
   ErrorDTO,
   InternalServerErrorDTO,
-  UpdateExpenseParamsDTO,
-  UpdateExpenseUserBodyDTO,
-} from '@/infra/http/dtos';
+  UpdateUserPasswordBodyDTO,
+} from '@/infra/http/rest/dtos';
 
-@ApiTags('Expenses')
-@Controller('api/expenses')
-export class UpdateExpenseRestController {
-  constructor(private readonly useCase: AbstractUpdateExpenseUseCase) {}
+@ApiTags('Users')
+@Controller('api/users')
+export class UpdateUserPasswordRestController {
+  constructor(private readonly useCase: AbstractUpdateUserPasswordUseCase) {}
 
-  @ApiOperation({ summary: 'Atualizar despesa' })
+  @ApiOperation({ summary: 'Atualizar senha' })
   @ApiResponse({
     status: 200,
-    description: 'Rota de atualização de despesa',
+    description: 'Rota de atualização de senha',
     type: String,
   })
   @ApiExtraModels(ErrorDTO)
@@ -46,18 +45,11 @@ export class UpdateExpenseRestController {
     description: 'DTO inválido ou erro na regras de negócio',
   })
   @ApiResponse({
-    status: 401,
-    schema: {
-      $ref: getSchemaPath(ErrorDTO),
-    },
-    description: 'Usuário não autorizado',
-  })
-  @ApiResponse({
     status: 404,
     schema: {
       $ref: getSchemaPath(ErrorDTO),
     },
-    description: 'Despesa não encontrada',
+    description: 'Usuário não encontrado',
   })
   @ApiExtraModels(InternalServerErrorDTO)
   @ApiResponse({
@@ -69,20 +61,21 @@ export class UpdateExpenseRestController {
   })
   @UseGuards(AuthGuard('jwt'))
   @HttpCode(200)
-  @Put(':id')
+  @Patch('password')
   async handle(
-    @Param() param: UpdateExpenseParamsDTO,
-    @Body() body: UpdateExpenseUserBodyDTO,
-  ): Promise<UpdateExpenseResponseDTO> {
-    const { id } = param;
+    @Req() req,
+    @Body()
+    body: UpdateUserPasswordBodyDTO,
+  ): Promise<UpdateUserPasswordResponseDTO> {
+    const { password, newPassword, newPasswordConfirm } = body;
 
-    const { expenseName, expenseValue, dueDate } = body;
+    const userId = req.user;
 
     const response = await this.useCase.execute({
-      id,
-      expenseName,
-      expenseValue,
-      dueDate,
+      id: userId,
+      password,
+      newPassword,
+      newPasswordConfirm,
     });
 
     if (response instanceof NotFoundError)
@@ -97,6 +90,6 @@ export class UpdateExpenseRestController {
         description: response.name,
       });
 
-    return response;
+    return Object(response);
   }
 }

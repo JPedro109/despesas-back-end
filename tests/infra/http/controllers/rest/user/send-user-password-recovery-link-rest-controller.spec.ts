@@ -1,5 +1,5 @@
 import { BadRequestException, NotFoundException } from '@nestjs/common';
-import { SendUserPasswordRecoveryLinkRestController } from '@/infra/http/controllers';
+import { SendUserPasswordRecoveryLinkRestController } from '@/infra/http/rest/controllers';
 import { InvalidParamError, NotFoundError } from '@/core/errors';
 import { SendUserPasswordRecoveryLinkStub } from './stubs';
 

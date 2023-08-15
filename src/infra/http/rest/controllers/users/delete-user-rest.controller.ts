@@ -1,9 +1,11 @@
 import {
   Body,
   Controller,
-  Post,
+  Delete,
   BadRequestException,
   HttpCode,
+  UseGuards,
+  Req,
 } from '@nestjs/common';
 import {
   ApiExtraModels,
@@ -12,20 +14,21 @@ import {
   ApiTags,
   getSchemaPath,
 } from '@nestjs/swagger';
-import { AbstractCreateUserUseCase } from '@/core/domain/users/abstracts';
-import { CreateUserResponseDTO } from '@/core/domain/users/dtos';
+import { AuthGuard } from '@nestjs/passport';
+import { AbstractDeleteUserUseCase } from '@/core/domain/users/abstracts';
+import { DeleteUserResponseDTO } from '@/core/domain/users/dtos';
 import {
-  CreateUserBodyDTO,
+  DeleteUserBodyDTO,
   ErrorDTO,
   InternalServerErrorDTO,
-} from '@/infra/http/dtos';
+} from '@/infra/http/rest/dtos';
 
 @ApiTags('Users')
 @Controller('api/users')
-export class CreateUserRestController {
-  constructor(private readonly useCase: AbstractCreateUserUseCase) {}
+export class DeleteUserRestController {
+  constructor(private readonly useCase: AbstractDeleteUserUseCase) {}
 
-  @ApiOperation({ summary: 'Criar usuário' })
+  @ApiOperation({ summary: 'Deletar usuário.' })
   @ApiResponse({
     status: 201,
     description: 'Rota de criação de usuário',
@@ -42,20 +45,24 @@ export class CreateUserRestController {
   @ApiExtraModels(InternalServerErrorDTO)
   @ApiResponse({
     status: 500,
-    description: 'Erro no servidor',
     schema: {
       $ref: getSchemaPath(InternalServerErrorDTO),
     },
+    description: 'Erro no servidor',
   })
-  @HttpCode(201)
-  @Post()
+  @UseGuards(AuthGuard('jwt'))
+  @HttpCode(200)
+  @Delete()
   async handle(
-    @Body() body: CreateUserBodyDTO,
-  ): Promise<CreateUserResponseDTO> {
-    const { email, password, passwordConfirm } = body;
+    @Req() req,
+    @Body() body: DeleteUserBodyDTO,
+  ): Promise<DeleteUserResponseDTO> {
+    const { password, passwordConfirm } = body;
+
+    const userId = req.user;
 
     const response = await this.useCase.execute({
-      email,
+      id: userId,
       password,
       passwordConfirm,
     });

@@ -21,7 +21,7 @@ import {
   ErrorDTO,
   InternalServerErrorDTO,
   SendUserEmailUpdateLinkBodyDTO,
-} from '@/infra/http/dtos';
+} from '@/infra/http/rest/dtos';
 
 @ApiTags('Users')
 @Controller('api/users')
