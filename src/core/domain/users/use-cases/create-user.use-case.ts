@@ -59,7 +59,7 @@ export class CreateUserUseCase implements AbstractCreateUserUseCase {
       await this.mailService.sendMail(
         userOrError.email.value,
         'Criação de Usuário',
-        'create-user.body',
+        'create-user-body',
         {
           appUrl: APP_URL,
           email: userOrError.email.value,

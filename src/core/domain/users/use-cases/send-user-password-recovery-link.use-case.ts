@@ -44,7 +44,7 @@ export class SendUserPasswordRecoveryLinkUseCase
     await this.mailService.sendMail(
       email,
       'Recuperação de Senha',
-      'recover-password.body',
+      'recover-password-body',
       {
         appUrl: APP_URL,
         email: email,
