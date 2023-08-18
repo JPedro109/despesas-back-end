@@ -9,6 +9,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import {
+  ApiBearerAuth,
   ApiExtraModels,
   ApiOperation,
   ApiResponse,
@@ -27,6 +28,7 @@ import {
 } from '@/infra/http/rest/dtos';
 
 @ApiTags('Expenses')
+@ApiBearerAuth()
 @Controller('api/expenses')
 export class UpdateExpenseController {
   constructor(private readonly useCase: AbstractUpdateExpenseUseCase) {}

@@ -23,6 +23,7 @@ async function bootstrap() {
         SwaggerModule.createDocument(
           app,
           new DocumentBuilder()
+            .addBearerAuth()
             .setTitle('Api de Despesas')
             .setDescription('Aplicação voltada para gerenciamento de despesas')
             .setVersion('1.0.0')

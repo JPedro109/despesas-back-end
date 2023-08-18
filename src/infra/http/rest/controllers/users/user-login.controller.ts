@@ -26,10 +26,10 @@ import {
 export class UserLoginController {
   constructor(private readonly useCase: AbstractUserLoginUseCase) {}
 
-  @ApiOperation({ summary: 'Atualizar senha' })
+  @ApiOperation({ summary: 'Login do usuário' })
   @ApiResponse({
     status: 200,
-    description: 'Rota de atualização de senha',
+    description: 'Rota de login do usuário',
     type: String,
   })
   @ApiExtraModels(ErrorDTO)

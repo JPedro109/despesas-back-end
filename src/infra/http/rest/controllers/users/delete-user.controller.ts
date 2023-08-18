@@ -8,6 +8,7 @@ import {
   Req,
 } from '@nestjs/common';
 import {
+  ApiBearerAuth,
   ApiExtraModels,
   ApiOperation,
   ApiResponse,
@@ -24,14 +25,15 @@ import {
 } from '@/infra/http/rest/dtos';
 
 @ApiTags('Users')
+@ApiBearerAuth()
 @Controller('api/users')
 export class DeleteUserController {
   constructor(private readonly useCase: AbstractDeleteUserUseCase) {}
 
   @ApiOperation({ summary: 'Deletar usuário.' })
   @ApiResponse({
-    status: 201,
-    description: 'Rota de criação de usuário',
+    status: 200,
+    description: 'Rota de exclusão de usuário',
     type: String,
   })
   @ApiExtraModels(ErrorDTO)

@@ -9,6 +9,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import {
+  ApiBearerAuth,
   ApiExtraModels,
   ApiOperation,
   ApiResponse,
@@ -26,6 +27,7 @@ import {
 } from '@/infra/http/rest/dtos';
 
 @ApiTags('Users')
+@ApiBearerAuth()
 @Controller('api/users')
 export class UpdateUserPasswordController {
   constructor(private readonly useCase: AbstractUpdateUserPasswordUseCase) {}

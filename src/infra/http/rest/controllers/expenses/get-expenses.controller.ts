@@ -1,5 +1,6 @@
 import { Controller, Get, HttpCode, UseGuards, Req } from '@nestjs/common';
 import {
+  ApiBearerAuth,
   ApiExtraModels,
   ApiOperation,
   ApiResponse,
@@ -12,6 +13,7 @@ import { GetExpensesResponseDTO } from '@/core/domain/expenses/dtos';
 import { ErrorDTO, InternalServerErrorDTO } from '@/infra/http/rest/dtos';
 
 @ApiTags('Expenses')
+@ApiBearerAuth()
 @Controller('api/expenses')
 export class GetExpensesController {
   constructor(private readonly useCase: AbstractGetExpensesUseCase) {}

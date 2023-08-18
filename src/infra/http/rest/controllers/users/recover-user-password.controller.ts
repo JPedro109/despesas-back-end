@@ -31,7 +31,7 @@ export class RecoverUserPasswordController {
 
   @ApiOperation({ summary: 'Recuperar senha do usuário.' })
   @ApiResponse({
-    status: 201,
+    status: 200,
     description: 'Rota de recuperação de senha do usuário',
     type: String,
   })
