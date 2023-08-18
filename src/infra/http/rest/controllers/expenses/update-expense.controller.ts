@@ -1,11 +1,12 @@
 import {
+  Param,
   Body,
   Controller,
-  Post,
+  Put,
   BadRequestException,
+  NotFoundException,
   HttpCode,
   UseGuards,
-  Req,
 } from '@nestjs/common';
 import {
   ApiExtraModels,
@@ -15,23 +16,25 @@ import {
   getSchemaPath,
 } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
-import { AbstractCreateExpenseUseCase } from '@/core/domain/expenses/abstracts';
-import { CreateExpenseResponseDTO } from '@/core/domain/expenses/dtos';
+import { AbstractUpdateExpenseUseCase } from '@/core/domain/expenses/abstracts';
+import { UpdateExpenseResponseDTO } from '@/core/domain/expenses/dtos';
+import { NotFoundError } from '@/core/errors';
 import {
-  CreateExpenseUserBodyDTO,
   ErrorDTO,
   InternalServerErrorDTO,
+  UpdateExpenseParamsDTO,
+  UpdateExpenseUserBodyDTO,
 } from '@/infra/http/rest/dtos';
 
 @ApiTags('Expenses')
 @Controller('api/expenses')
-export class CreateExpenseRestController {
-  constructor(private readonly useCase: AbstractCreateExpenseUseCase) {}
+export class UpdateExpenseController {
+  constructor(private readonly useCase: AbstractUpdateExpenseUseCase) {}
 
-  @ApiOperation({ summary: 'Criar despesa' })
+  @ApiOperation({ summary: 'Atualizar despesa' })
   @ApiResponse({
-    status: 201,
-    description: 'Rota de criação de despesa',
+    status: 200,
+    description: 'Rota de atualização de despesa',
     type: String,
   })
   @ApiExtraModels(ErrorDTO)
@@ -49,6 +52,13 @@ export class CreateExpenseRestController {
     },
     description: 'Usuário não autorizado',
   })
+  @ApiResponse({
+    status: 404,
+    schema: {
+      $ref: getSchemaPath(ErrorDTO),
+    },
+    description: 'Despesa não encontrada',
+  })
   @ApiExtraModels(InternalServerErrorDTO)
   @ApiResponse({
     status: 500,
@@ -58,22 +68,28 @@ export class CreateExpenseRestController {
     description: 'Erro no servidor',
   })
   @UseGuards(AuthGuard('jwt'))
-  @HttpCode(201)
-  @Post()
+  @HttpCode(200)
+  @Put(':id')
   async handle(
-    @Req() req,
-    @Body() body: CreateExpenseUserBodyDTO,
-  ): Promise<CreateExpenseResponseDTO> {
+    @Param() param: UpdateExpenseParamsDTO,
+    @Body() body: UpdateExpenseUserBodyDTO,
+  ): Promise<UpdateExpenseResponseDTO> {
+    const { id } = param;
+
     const { expenseName, expenseValue, dueDate } = body;
 
-    const userId = req.user;
-
     const response = await this.useCase.execute({
+      id,
       expenseName,
       expenseValue,
       dueDate,
-      userId,
     });
+
+    if (response instanceof NotFoundError)
+      throw new NotFoundException(response.message, {
+        cause: response,
+        description: response.name,
+      });
 
     if (response instanceof Error)
       throw new BadRequestException(response.message, {

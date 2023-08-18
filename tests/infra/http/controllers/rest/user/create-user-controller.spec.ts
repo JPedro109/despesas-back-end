@@ -1,10 +1,10 @@
 import { BadRequestException } from '@nestjs/common';
-import { CreateUserRestController } from '@/infra/http/rest/controllers';
+import { CreateUserController } from '@/infra/http/rest/controllers';
 import { CreateUserStub } from './stubs';
 
 const makeSut = () => {
   const createUserStub = new CreateUserStub();
-  const sut = new CreateUserRestController(createUserStub);
+  const sut = new CreateUserController(createUserStub);
 
   return {
     sut,
@@ -20,7 +20,7 @@ const makeBody = (email: string, password: string, passwordConfirm: string) => {
   };
 };
 
-describe('Infra (RestController) - CreateUserRestController', () => {
+describe('Infra (Controller) - CreateUserController', () => {
   test('Should not create user, because use case returned error', async () => {
     const body = makeBody('email.com', 'password', 'password');
     const { sut, createUserStub } = makeSut();

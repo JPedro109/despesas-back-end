@@ -1,12 +1,11 @@
 import {
-  Query,
+  Body,
   Controller,
-  HttpCode,
-  Patch,
   BadRequestException,
-  UseGuards,
-  Req,
   NotFoundException,
+  HttpCode,
+  Query,
+  Patch,
 } from '@nestjs/common';
 import {
   ApiExtraModels,
@@ -15,25 +14,25 @@ import {
   ApiTags,
   getSchemaPath,
 } from '@nestjs/swagger';
-import { AuthGuard } from '@nestjs/passport';
-import { AbstractUpdateUserEmailUseCase } from '@/core/domain/users/abstracts';
-import { UpdateUserEmailResponseDTO } from '@/core/domain/users/dtos';
+import { NotFoundError } from '@/core/errors';
+import { AbstractRecoverUserPasswordUseCase } from '@/core/domain/users/abstracts';
+import { RecoverUserPasswordResponseDTO } from '@/core/domain/users/dtos';
 import {
+  RecoverUserPasswordQueryDTO,
+  RecoverUserPasswordBodyDTO,
   ErrorDTO,
   InternalServerErrorDTO,
-  UpdateUserEmailBodyDTO,
 } from '@/infra/http/rest/dtos';
-import { NotFoundError } from '@/core/errors';
 
 @ApiTags('Users')
 @Controller('api/users')
-export class UpdateUserEmailRestController {
-  constructor(private readonly useCase: AbstractUpdateUserEmailUseCase) {}
+export class RecoverUserPasswordController {
+  constructor(private readonly useCase: AbstractRecoverUserPasswordUseCase) {}
 
-  @ApiOperation({ summary: 'Atualizar email' })
+  @ApiOperation({ summary: 'Recuperar senha do usuário.' })
   @ApiResponse({
-    status: 200,
-    description: 'Rota de atualização de email',
+    status: 201,
+    description: 'Rota de recuperação de senha do usuário',
     type: String,
   })
   @ApiExtraModels(ErrorDTO)
@@ -59,22 +58,22 @@ export class UpdateUserEmailRestController {
     },
     description: 'Erro no servidor',
   })
-  @UseGuards(AuthGuard('jwt'))
   @HttpCode(200)
-  @Patch('email')
+  @Patch('password-recover')
   async handle(
-    @Req() req,
     @Query()
-    body: UpdateUserEmailBodyDTO,
-  ): Promise<UpdateUserEmailResponseDTO> {
-    const { email, code } = body;
-
-    const userId = req.user;
+    query: RecoverUserPasswordQueryDTO,
+    @Body()
+    body: RecoverUserPasswordBodyDTO,
+  ): Promise<RecoverUserPasswordResponseDTO> {
+    const { password, passwordConfirm } = body;
+    const { email, code } = query;
 
     const response = await this.useCase.execute({
-      id: userId,
       email,
       code,
+      password,
+      passwordConfirm,
     });
 
     if (response instanceof NotFoundError)
@@ -83,11 +82,12 @@ export class UpdateUserEmailRestController {
         description: response.name,
       });
 
-    if (response instanceof Error)
+    if (response instanceof Error) {
       throw new BadRequestException(response.message, {
         cause: response,
         description: response.name,
       });
+    }
 
     return Object(response);
   }

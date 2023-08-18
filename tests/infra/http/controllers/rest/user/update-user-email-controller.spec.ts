@@ -1,11 +1,11 @@
 import { BadRequestException, NotFoundException } from '@nestjs/common';
-import { UpdateUserEmailRestController } from '@/infra/http/rest/controllers';
+import { UpdateUserEmailController } from '@/infra/http/rest/controllers';
 import { NotFoundError } from '@/core/errors';
 import { UpdateUserEmailStub } from './stubs';
 
 const makeSut = () => {
   const updateUserEmailStub = new UpdateUserEmailStub();
-  const sut = new UpdateUserEmailRestController(updateUserEmailStub);
+  const sut = new UpdateUserEmailController(updateUserEmailStub);
 
   return {
     sut,
@@ -21,7 +21,7 @@ const makeBody = (id: string, email: string, code: string) => {
   };
 };
 
-describe('Infra (RestController) - UpdateUserEmailRestController', () => {
+describe('Infra (Controller) - UpdateUserEmailController', () => {
   test('Should not update user email, because use returned not found error', async () => {
     const body = makeBody('2', 'email.com', 'code_invalid');
     const { sut, updateUserEmailStub } = makeSut();

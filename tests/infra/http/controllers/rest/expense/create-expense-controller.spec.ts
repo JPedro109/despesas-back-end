@@ -1,11 +1,11 @@
 import { BadRequestException } from '@nestjs/common';
-import { CreateExpenseRestController } from '@/infra/http/rest/controllers';
+import { CreateExpenseController } from '@/infra/http/rest/controllers';
 import { testExpenseModel } from './datas';
 import { CreateExpenseStub } from './stubs';
 
 const makeSut = () => {
   const createExpenseStub = new CreateExpenseStub();
-  const sut = new CreateExpenseRestController(createExpenseStub);
+  const sut = new CreateExpenseController(createExpenseStub);
 
   return {
     sut,
@@ -27,7 +27,7 @@ const makeBody = (
   };
 };
 
-describe('Infra (RestController) - CreateExpenseRestController', () => {
+describe('Infra (Controller) - CreateExpenseController', () => {
   test('Should not create expense, because use case returned error', async () => {
     const body = makeBody('1', 'expense', -100, '2000-01-01');
     const { sut, createExpenseStub } = makeSut();

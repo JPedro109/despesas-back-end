@@ -2,10 +2,10 @@ import {
   Body,
   Controller,
   BadRequestException,
-  NotFoundException,
   HttpCode,
-  Query,
   Patch,
+  UseGuards,
+  Req,
 } from '@nestjs/common';
 import {
   ApiExtraModels,
@@ -14,25 +14,26 @@ import {
   ApiTags,
   getSchemaPath,
 } from '@nestjs/swagger';
-import { NotFoundError } from '@/core/errors';
-import { AbstractRecoverUserPasswordUseCase } from '@/core/domain/users/abstracts';
-import { RecoverUserPasswordResponseDTO } from '@/core/domain/users/dtos';
+import { AuthGuard } from '@nestjs/passport';
+import { AbstractSendUserEmailUpdateLinkUseCase } from '@/core/domain/users/abstracts';
+import { SendUserEmailUpdateLinkResponseDTO } from '@/core/domain/users/dtos';
 import {
-  RecoverUserPasswordQueryDTO,
-  RecoverUserPasswordBodyDTO,
   ErrorDTO,
   InternalServerErrorDTO,
+  SendUserEmailUpdateLinkBodyDTO,
 } from '@/infra/http/rest/dtos';
 
 @ApiTags('Users')
 @Controller('api/users')
-export class RecoverUserPasswordRestController {
-  constructor(private readonly useCase: AbstractRecoverUserPasswordUseCase) {}
+export class SendUserEmailUpdateLinkController {
+  constructor(
+    private readonly useCase: AbstractSendUserEmailUpdateLinkUseCase,
+  ) {}
 
-  @ApiOperation({ summary: 'Recuperar senha do usuário.' })
+  @ApiOperation({ summary: 'Enviar link de atualização de email.' })
   @ApiResponse({
-    status: 201,
-    description: 'Rota de recuperação de senha do usuário',
+    status: 200,
+    description: 'Rota de envio do link de atualização de email',
     type: String,
   })
   @ApiExtraModels(ErrorDTO)
@@ -58,36 +59,28 @@ export class RecoverUserPasswordRestController {
     },
     description: 'Erro no servidor',
   })
+  @UseGuards(AuthGuard('jwt'))
   @HttpCode(200)
-  @Patch('password-recover')
+  @Patch('send-email-update-link')
   async handle(
-    @Query()
-    query: RecoverUserPasswordQueryDTO,
+    @Req() req,
     @Body()
-    body: RecoverUserPasswordBodyDTO,
-  ): Promise<RecoverUserPasswordResponseDTO> {
-    const { password, passwordConfirm } = body;
-    const { email, code } = query;
+    body: SendUserEmailUpdateLinkBodyDTO,
+  ): Promise<SendUserEmailUpdateLinkResponseDTO> {
+    const { email } = body;
+
+    const userId = req.user;
 
     const response = await this.useCase.execute({
+      id: userId,
       email,
-      code,
-      password,
-      passwordConfirm,
     });
 
-    if (response instanceof NotFoundError)
-      throw new NotFoundException(response.message, {
-        cause: response,
-        description: response.name,
-      });
-
-    if (response instanceof Error) {
+    if (response instanceof Error)
       throw new BadRequestException(response.message, {
         cause: response,
         description: response.name,
       });
-    }
 
     return Object(response);
   }

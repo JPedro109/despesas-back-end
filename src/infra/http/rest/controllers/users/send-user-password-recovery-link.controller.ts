@@ -23,7 +23,7 @@ import {
 
 @ApiTags('Users')
 @Controller('api/users')
-export class SendUserPasswordRecoveryLinkRestController {
+export class SendUserPasswordRecoveryLinkController {
   constructor(
     private readonly useCase: AbstractSendUserPasswordRecoveryLinkUseCase,
   ) {}

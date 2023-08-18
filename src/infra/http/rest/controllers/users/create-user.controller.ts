@@ -1,11 +1,9 @@
 import {
   Body,
   Controller,
-  Delete,
+  Post,
   BadRequestException,
   HttpCode,
-  UseGuards,
-  Req,
 } from '@nestjs/common';
 import {
   ApiExtraModels,
@@ -14,21 +12,20 @@ import {
   ApiTags,
   getSchemaPath,
 } from '@nestjs/swagger';
-import { AuthGuard } from '@nestjs/passport';
-import { AbstractDeleteUserUseCase } from '@/core/domain/users/abstracts';
-import { DeleteUserResponseDTO } from '@/core/domain/users/dtos';
+import { AbstractCreateUserUseCase } from '@/core/domain/users/abstracts';
+import { CreateUserResponseDTO } from '@/core/domain/users/dtos';
 import {
-  DeleteUserBodyDTO,
+  CreateUserBodyDTO,
   ErrorDTO,
   InternalServerErrorDTO,
 } from '@/infra/http/rest/dtos';
 
 @ApiTags('Users')
 @Controller('api/users')
-export class DeleteUserRestController {
-  constructor(private readonly useCase: AbstractDeleteUserUseCase) {}
+export class CreateUserController {
+  constructor(private readonly useCase: AbstractCreateUserUseCase) {}
 
-  @ApiOperation({ summary: 'Deletar usuário.' })
+  @ApiOperation({ summary: 'Criar usuário' })
   @ApiResponse({
     status: 201,
     description: 'Rota de criação de usuário',
@@ -45,24 +42,20 @@ export class DeleteUserRestController {
   @ApiExtraModels(InternalServerErrorDTO)
   @ApiResponse({
     status: 500,
+    description: 'Erro no servidor',
     schema: {
       $ref: getSchemaPath(InternalServerErrorDTO),
     },
-    description: 'Erro no servidor',
   })
-  @UseGuards(AuthGuard('jwt'))
-  @HttpCode(200)
-  @Delete()
+  @HttpCode(201)
+  @Post()
   async handle(
-    @Req() req,
-    @Body() body: DeleteUserBodyDTO,
-  ): Promise<DeleteUserResponseDTO> {
-    const { password, passwordConfirm } = body;
-
-    const userId = req.user;
+    @Body() body: CreateUserBodyDTO,
+  ): Promise<CreateUserResponseDTO> {
+    const { email, password, passwordConfirm } = body;
 
     const response = await this.useCase.execute({
-      id: userId,
+      email,
       password,
       passwordConfirm,
     });

@@ -1,7 +1,9 @@
 import {
-  Body,
+  Query,
   Controller,
-  Post,
+  Patch,
+  BadRequestException,
+  NotFoundException,
   UnauthorizedException,
   HttpCode,
 } from '@nestjs/common';
@@ -12,24 +14,24 @@ import {
   ApiTags,
   getSchemaPath,
 } from '@nestjs/swagger';
-import { UnauthorizedError } from '@/core/errors';
-import { AbstractUserLoginUseCase } from '@/core/domain/users/abstracts';
-import { UserLoginResponseDTO } from '@/core/domain/users/dtos';
+import { NotFoundError, UnauthorizedError } from '@/core/errors';
+import { AbstractUserVerifyEmailUseCase } from '@/core/domain/users/abstracts';
+import { UserVerifyEmailResponseDTO } from '@/core/domain/users/dtos';
 import {
   ErrorDTO,
   InternalServerErrorDTO,
-  UserLoginBodyDTO,
+  UserVerifyEmailQueryDTO,
 } from '@/infra/http/rest/dtos';
 
 @ApiTags('Users')
 @Controller('api/users')
-export class UserLoginRestController {
-  constructor(private readonly useCase: AbstractUserLoginUseCase) {}
+export class UserVerifyEmailController {
+  constructor(private readonly useCase: AbstractUserVerifyEmailUseCase) {}
 
-  @ApiOperation({ summary: 'Atualizar senha' })
+  @ApiOperation({ summary: 'Verificar email' })
   @ApiResponse({
     status: 200,
-    description: 'Rota de atualização de senha',
+    description: 'Rota de verificação de email',
     type: String,
   })
   @ApiExtraModels(ErrorDTO)
@@ -47,6 +49,13 @@ export class UserLoginRestController {
     },
     description: 'Usuário não autorizado',
   })
+  @ApiResponse({
+    status: 404,
+    schema: {
+      $ref: getSchemaPath(ErrorDTO),
+    },
+    description: 'Usuário não encontrado',
+  })
   @ApiExtraModels(InternalServerErrorDTO)
   @ApiResponse({
     status: 500,
@@ -56,17 +65,31 @@ export class UserLoginRestController {
     description: 'Erro no servidor',
   })
   @HttpCode(200)
-  @Post('login')
-  async handle(@Body() body: UserLoginBodyDTO): Promise<UserLoginResponseDTO> {
-    const { email, password } = body;
+  @Patch('verify-email')
+  async handle(
+    @Query() query: UserVerifyEmailQueryDTO,
+  ): Promise<UserVerifyEmailResponseDTO> {
+    const { email, code } = query;
 
     const response = await this.useCase.execute({
       email,
-      password,
+      code,
     });
+
+    if (response instanceof NotFoundError)
+      throw new NotFoundException(response.message, {
+        cause: response,
+        description: response.name,
+      });
 
     if (response instanceof UnauthorizedError)
       throw new UnauthorizedException(response.message, {
+        cause: response,
+        description: response.name,
+      });
+
+    if (response instanceof Error)
+      throw new BadRequestException(response.message, {
         cause: response,
         description: response.name,
       });

@@ -1,10 +1,10 @@
-import { GetExpensesRestController } from '@/infra/http/rest/controllers';
+import { GetExpensesController } from '@/infra/http/rest/controllers';
 import { testExpenseModel } from './datas';
 import { GetExpensesStub } from './stubs';
 
 const makeSut = () => {
   const getExpensesStub = new GetExpensesStub();
-  const sut = new GetExpensesRestController(getExpensesStub);
+  const sut = new GetExpensesController(getExpensesStub);
 
   return {
     sut,
@@ -18,7 +18,7 @@ const makeBody = (userId: string) => {
   };
 };
 
-describe('Infra (RestController) - GetExpenseRestController', () => {
+describe('Infra (Controller) - GetExpenseController', () => {
   test('Should get expense', async () => {
     const body = makeBody('1');
     const { sut } = makeSut();

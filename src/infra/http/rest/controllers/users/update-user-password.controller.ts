@@ -1,10 +1,12 @@
 import {
-  Param,
   Controller,
-  Delete,
-  NotFoundException,
+  BadRequestException,
   HttpCode,
+  Patch,
   UseGuards,
+  Req,
+  Body,
+  NotFoundException,
 } from '@nestjs/common';
 import {
   ApiExtraModels,
@@ -13,25 +15,25 @@ import {
   ApiTags,
   getSchemaPath,
 } from '@nestjs/swagger';
+import { AbstractUpdateUserPasswordUseCase } from '@/core/domain/users/abstracts';
 import { AuthGuard } from '@nestjs/passport';
-import { AbstractDeleteExpenseUseCase } from '@/core/domain/expenses/abstracts';
-import { DeleteExpenseResponseDTO } from '@/core/domain/expenses/dtos';
 import { NotFoundError } from '@/core/errors';
+import { UpdateUserPasswordResponseDTO } from '@/core/domain/users/dtos';
 import {
-  DeleteExpenseParamsDTO,
   ErrorDTO,
   InternalServerErrorDTO,
+  UpdateUserPasswordBodyDTO,
 } from '@/infra/http/rest/dtos';
 
-@ApiTags('Expenses')
-@Controller('api/expenses')
-export class DeleteExpenseRestController {
-  constructor(private readonly useCase: AbstractDeleteExpenseUseCase) {}
+@ApiTags('Users')
+@Controller('api/users')
+export class UpdateUserPasswordController {
+  constructor(private readonly useCase: AbstractUpdateUserPasswordUseCase) {}
 
-  @ApiOperation({ summary: 'Deletar despesa' })
+  @ApiOperation({ summary: 'Atualizar senha' })
   @ApiResponse({
     status: 200,
-    description: 'Rota de deleção de despesa',
+    description: 'Rota de atualização de senha',
     type: String,
   })
   @ApiExtraModels(ErrorDTO)
@@ -43,18 +45,11 @@ export class DeleteExpenseRestController {
     description: 'DTO inválido ou erro na regras de negócio',
   })
   @ApiResponse({
-    status: 401,
-    schema: {
-      $ref: getSchemaPath(ErrorDTO),
-    },
-    description: 'Usuário não autorizado',
-  })
-  @ApiResponse({
     status: 404,
     schema: {
       $ref: getSchemaPath(ErrorDTO),
     },
-    description: 'Despesa não encontrada',
+    description: 'Usuário não encontrado',
   })
   @ApiExtraModels(InternalServerErrorDTO)
   @ApiResponse({
@@ -66,14 +61,21 @@ export class DeleteExpenseRestController {
   })
   @UseGuards(AuthGuard('jwt'))
   @HttpCode(200)
-  @Delete(':id')
+  @Patch('password')
   async handle(
-    @Param() body: DeleteExpenseParamsDTO,
-  ): Promise<DeleteExpenseResponseDTO> {
-    const { id } = body;
+    @Req() req,
+    @Body()
+    body: UpdateUserPasswordBodyDTO,
+  ): Promise<UpdateUserPasswordResponseDTO> {
+    const { password, newPassword, newPasswordConfirm } = body;
+
+    const userId = req.user;
 
     const response = await this.useCase.execute({
-      id,
+      id: userId,
+      password,
+      newPassword,
+      newPasswordConfirm,
     });
 
     if (response instanceof NotFoundError)
@@ -82,6 +84,12 @@ export class DeleteExpenseRestController {
         description: response.name,
       });
 
-    return response;
+    if (response instanceof Error)
+      throw new BadRequestException(response.message, {
+        cause: response,
+        description: response.name,
+      });
+
+    return Object(response);
   }
 }

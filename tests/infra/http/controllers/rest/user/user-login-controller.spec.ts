@@ -1,10 +1,10 @@
 import { BadRequestException } from '@nestjs/common';
-import { UserLoginRestController } from '@/infra/http/rest/controllers';
+import { UserLoginController } from '@/infra/http/rest/controllers';
 import { UserLoginStub } from './stubs';
 
 const makeSut = () => {
   const userLoginStub = new UserLoginStub();
-  const sut = new UserLoginRestController(userLoginStub);
+  const sut = new UserLoginController(userLoginStub);
 
   return {
     sut,
@@ -19,7 +19,7 @@ const makeBody = (email: string, password: string) => {
   };
 };
 
-describe('Infra (RestController) - UserLoginRestController', () => {
+describe('Infra (Controller) - UserLoginController', () => {
   test('Should not login user, because use case returned error', async () => {
     const body = makeBody('email.com', 'password');
     const { sut, userLoginStub } = makeSut();

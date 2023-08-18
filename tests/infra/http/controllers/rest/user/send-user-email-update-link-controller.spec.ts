@@ -1,10 +1,10 @@
 import { BadRequestException } from '@nestjs/common';
-import { SendUserEmailUpdateLinkRestController } from '@/infra/http/rest/controllers';
+import { SendUserEmailUpdateLinkController } from '@/infra/http/rest/controllers';
 import { SendUserEmailUpdateLinkStub } from './stubs';
 
 const makeSut = () => {
   const sendUserEmailUpdateLinkStub = new SendUserEmailUpdateLinkStub();
-  const sut = new SendUserEmailUpdateLinkRestController(
+  const sut = new SendUserEmailUpdateLinkController(
     sendUserEmailUpdateLinkStub,
   );
 
@@ -21,7 +21,7 @@ const makeBody = (id: string, email: string) => {
   };
 };
 
-describe('Infra (RestController) - SendUserEmailUpdateLinkStub', () => {
+describe('Infra (Controller) - SendUserEmailUpdateLinkStub', () => {
   test('Should not send user email update link, because use case returned error', async () => {
     const body = makeBody('1', 'email.com');
     const { sut, sendUserEmailUpdateLinkStub } = makeSut();

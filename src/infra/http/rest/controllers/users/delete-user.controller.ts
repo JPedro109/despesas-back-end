@@ -1,12 +1,11 @@
 import {
+  Body,
   Controller,
+  Delete,
   BadRequestException,
   HttpCode,
-  Patch,
   UseGuards,
   Req,
-  Body,
-  NotFoundException,
 } from '@nestjs/common';
 import {
   ApiExtraModels,
@@ -15,25 +14,24 @@ import {
   ApiTags,
   getSchemaPath,
 } from '@nestjs/swagger';
-import { AbstractUpdateUserPasswordUseCase } from '@/core/domain/users/abstracts';
 import { AuthGuard } from '@nestjs/passport';
-import { NotFoundError } from '@/core/errors';
-import { UpdateUserPasswordResponseDTO } from '@/core/domain/users/dtos';
+import { AbstractDeleteUserUseCase } from '@/core/domain/users/abstracts';
+import { DeleteUserResponseDTO } from '@/core/domain/users/dtos';
 import {
+  DeleteUserBodyDTO,
   ErrorDTO,
   InternalServerErrorDTO,
-  UpdateUserPasswordBodyDTO,
 } from '@/infra/http/rest/dtos';
 
 @ApiTags('Users')
 @Controller('api/users')
-export class UpdateUserPasswordRestController {
-  constructor(private readonly useCase: AbstractUpdateUserPasswordUseCase) {}
+export class DeleteUserController {
+  constructor(private readonly useCase: AbstractDeleteUserUseCase) {}
 
-  @ApiOperation({ summary: 'Atualizar senha' })
+  @ApiOperation({ summary: 'Deletar usuário.' })
   @ApiResponse({
-    status: 200,
-    description: 'Rota de atualização de senha',
+    status: 201,
+    description: 'Rota de criação de usuário',
     type: String,
   })
   @ApiExtraModels(ErrorDTO)
@@ -43,13 +41,6 @@ export class UpdateUserPasswordRestController {
       $ref: getSchemaPath(ErrorDTO),
     },
     description: 'DTO inválido ou erro na regras de negócio',
-  })
-  @ApiResponse({
-    status: 404,
-    schema: {
-      $ref: getSchemaPath(ErrorDTO),
-    },
-    description: 'Usuário não encontrado',
   })
   @ApiExtraModels(InternalServerErrorDTO)
   @ApiResponse({
@@ -61,28 +52,20 @@ export class UpdateUserPasswordRestController {
   })
   @UseGuards(AuthGuard('jwt'))
   @HttpCode(200)
-  @Patch('password')
+  @Delete()
   async handle(
     @Req() req,
-    @Body()
-    body: UpdateUserPasswordBodyDTO,
-  ): Promise<UpdateUserPasswordResponseDTO> {
-    const { password, newPassword, newPasswordConfirm } = body;
+    @Body() body: DeleteUserBodyDTO,
+  ): Promise<DeleteUserResponseDTO> {
+    const { password, passwordConfirm } = body;
 
     const userId = req.user;
 
     const response = await this.useCase.execute({
       id: userId,
       password,
-      newPassword,
-      newPasswordConfirm,
+      passwordConfirm,
     });
-
-    if (response instanceof NotFoundError)
-      throw new NotFoundException(response.message, {
-        cause: response,
-        description: response.name,
-      });
 
     if (response instanceof Error)
       throw new BadRequestException(response.message, {

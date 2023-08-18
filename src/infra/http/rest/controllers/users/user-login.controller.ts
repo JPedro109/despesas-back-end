@@ -1,11 +1,9 @@
 import {
   Body,
   Controller,
-  BadRequestException,
+  Post,
+  UnauthorizedException,
   HttpCode,
-  Patch,
-  UseGuards,
-  Req,
 } from '@nestjs/common';
 import {
   ApiExtraModels,
@@ -14,26 +12,24 @@ import {
   ApiTags,
   getSchemaPath,
 } from '@nestjs/swagger';
-import { AuthGuard } from '@nestjs/passport';
-import { AbstractSendUserEmailUpdateLinkUseCase } from '@/core/domain/users/abstracts';
-import { SendUserEmailUpdateLinkResponseDTO } from '@/core/domain/users/dtos';
+import { UnauthorizedError } from '@/core/errors';
+import { AbstractUserLoginUseCase } from '@/core/domain/users/abstracts';
+import { UserLoginResponseDTO } from '@/core/domain/users/dtos';
 import {
   ErrorDTO,
   InternalServerErrorDTO,
-  SendUserEmailUpdateLinkBodyDTO,
+  UserLoginBodyDTO,
 } from '@/infra/http/rest/dtos';
 
 @ApiTags('Users')
 @Controller('api/users')
-export class SendUserEmailUpdateLinkRestController {
-  constructor(
-    private readonly useCase: AbstractSendUserEmailUpdateLinkUseCase,
-  ) {}
+export class UserLoginController {
+  constructor(private readonly useCase: AbstractUserLoginUseCase) {}
 
-  @ApiOperation({ summary: 'Enviar link de atualização de email.' })
+  @ApiOperation({ summary: 'Atualizar senha' })
   @ApiResponse({
     status: 200,
-    description: 'Rota de envio do link de atualização de email',
+    description: 'Rota de atualização de senha',
     type: String,
   })
   @ApiExtraModels(ErrorDTO)
@@ -45,11 +41,11 @@ export class SendUserEmailUpdateLinkRestController {
     description: 'DTO inválido ou erro na regras de negócio',
   })
   @ApiResponse({
-    status: 404,
+    status: 401,
     schema: {
       $ref: getSchemaPath(ErrorDTO),
     },
-    description: 'Usuário não encontrado',
+    description: 'Usuário não autorizado',
   })
   @ApiExtraModels(InternalServerErrorDTO)
   @ApiResponse({
@@ -59,25 +55,18 @@ export class SendUserEmailUpdateLinkRestController {
     },
     description: 'Erro no servidor',
   })
-  @UseGuards(AuthGuard('jwt'))
   @HttpCode(200)
-  @Patch('send-email-update-link')
-  async handle(
-    @Req() req,
-    @Body()
-    body: SendUserEmailUpdateLinkBodyDTO,
-  ): Promise<SendUserEmailUpdateLinkResponseDTO> {
-    const { email } = body;
-
-    const userId = req.user;
+  @Post('login')
+  async handle(@Body() body: UserLoginBodyDTO): Promise<UserLoginResponseDTO> {
+    const { email, password } = body;
 
     const response = await this.useCase.execute({
-      id: userId,
       email,
+      password,
     });
 
-    if (response instanceof Error)
-      throw new BadRequestException(response.message, {
+    if (response instanceof UnauthorizedError)
+      throw new UnauthorizedException(response.message, {
         cause: response,
         description: response.name,
       });

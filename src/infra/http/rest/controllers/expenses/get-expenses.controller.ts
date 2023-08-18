@@ -13,7 +13,7 @@ import { ErrorDTO, InternalServerErrorDTO } from '@/infra/http/rest/dtos';
 
 @ApiTags('Expenses')
 @Controller('api/expenses')
-export class GetExpensesRestController {
+export class GetExpensesController {
   constructor(private readonly useCase: AbstractGetExpensesUseCase) {}
 
   @ApiOperation({ summary: 'Retornar despesas' })
