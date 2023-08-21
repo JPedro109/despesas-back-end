@@ -1,4 +1,4 @@
-import { initApp, before, after, getHttpServer } from '../__mocks__';
+import { initApp, before, after, getHttpServer } from '../../../__mocks__';
 import * as request from 'supertest';
 
 const makeBody = (email: unknown, password: unknown) => {

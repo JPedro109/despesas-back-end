@@ -1,13 +1,16 @@
-import { initApp, before, after, getHttpServer } from '../__mocks__';
+jest.setTimeout(10000);
+
+import { initApp, before, after, getHttpServer } from '../../../__mocks__';
 import * as request from 'supertest';
 
-const makeBodySendUserEmailUpdateLink = (email: unknown) => {
+const makeBody = (password: unknown, passwordConfirm: unknown) => {
   return {
-    email,
+    password,
+    passwordConfirm,
   };
 };
 
-describe('/api/users/send-email-update-link - PATCH', () => {
+describe('/api/users - DELETE', () => {
   beforeEach(async () => {
     const { module } = await initApp();
     await before(module);
@@ -18,8 +21,8 @@ describe('/api/users/send-email-update-link - PATCH', () => {
     await after(app, module);
   });
 
-  test('Should not send user email update link, because email is empty', async () => {
-    const body = makeBodySendUserEmailUpdateLink('');
+  test('Should not delete user, because password is empty', async () => {
+    const body = makeBody('', 'Password1234');
 
     const token = (
       await request(await getHttpServer())
@@ -31,7 +34,7 @@ describe('/api/users/send-email-update-link - PATCH', () => {
     ).body;
 
     const response = await request(await getHttpServer())
-      .patch('/api/users/send-email-update-link')
+      .delete('/api/users')
       .set('Authorization', `Bearer ${token}`)
       .send(body);
 
@@ -39,8 +42,8 @@ describe('/api/users/send-email-update-link - PATCH', () => {
     expect(response.body.error).toBe('Bad Request');
   });
 
-  test('Should not send user email update link, because email is with type error', async () => {
-    const body = makeBodySendUserEmailUpdateLink(100);
+  test('Should not delete user, because passwordConfirm is empty', async () => {
+    const body = makeBody('Password1234', '');
 
     const token = (
       await request(await getHttpServer())
@@ -52,7 +55,7 @@ describe('/api/users/send-email-update-link - PATCH', () => {
     ).body;
 
     const response = await request(await getHttpServer())
-      .patch('/api/users/send-email-update-link')
+      .delete('/api/users')
       .set('Authorization', `Bearer ${token}`)
       .send(body);
 
@@ -60,8 +63,8 @@ describe('/api/users/send-email-update-link - PATCH', () => {
     expect(response.body.error).toBe('Bad Request');
   });
 
-  test('Should not send user email update link, because email is invalid', async () => {
-    const body = makeBodySendUserEmailUpdateLink('email.com');
+  test('Should not delete user, because password is with type error', async () => {
+    const body = makeBody(100, 'Password1234');
 
     const token = (
       await request(await getHttpServer())
@@ -73,16 +76,16 @@ describe('/api/users/send-email-update-link - PATCH', () => {
     ).body;
 
     const response = await request(await getHttpServer())
-      .patch('/api/users/send-email-update-link')
+      .delete('/api/users')
       .set('Authorization', `Bearer ${token}`)
       .send(body);
 
     expect(response.statusCode).toBe(400);
-    expect(response.body.error).toBe('InvalidEmailError');
+    expect(response.body.error).toBe('Bad Request');
   });
 
-  test('Should not send user email update link, because email already is register', async () => {
-    const body = makeBodySendUserEmailUpdateLink('email_verified@test.com');
+  test('Should not delete user, because passwordConfirm is with type error', async () => {
+    const body = makeBody('Password1234', 100);
 
     const token = (
       await request(await getHttpServer())
@@ -94,7 +97,28 @@ describe('/api/users/send-email-update-link - PATCH', () => {
     ).body;
 
     const response = await request(await getHttpServer())
-      .patch('/api/users/send-email-update-link')
+      .delete('/api/users')
+      .set('Authorization', `Bearer ${token}`)
+      .send(body);
+
+    expect(response.statusCode).toBe(400);
+    expect(response.body.error).toBe('Bad Request');
+  });
+
+  test('Should not delete user, because passwords is not match', async () => {
+    const body = makeBody('Password1234', 'Password12345');
+
+    const token = (
+      await request(await getHttpServer())
+        .post('/api/users/login')
+        .send({
+          email: 'email_verified@test.com',
+          password: 'Password1234',
+        })
+    ).body;
+
+    const response = await request(await getHttpServer())
+      .delete('/api/users')
       .set('Authorization', `Bearer ${token}`)
       .send(body);
 
@@ -102,8 +126,8 @@ describe('/api/users/send-email-update-link - PATCH', () => {
     expect(response.body.error).toBe('InvalidParamError');
   });
 
-  test('Should send user email update link', async () => {
-    const body = makeBodySendUserEmailUpdateLink('email@test.com');
+  test('Should not delete user, because password is invalid', async () => {
+    const body = makeBody('password', 'password');
 
     const token = (
       await request(await getHttpServer())
@@ -115,11 +139,32 @@ describe('/api/users/send-email-update-link - PATCH', () => {
     ).body;
 
     const response = await request(await getHttpServer())
-      .patch('/api/users/send-email-update-link')
+      .delete('/api/users')
+      .set('Authorization', `Bearer ${token}`)
+      .send(body);
+
+    expect(response.statusCode).toBe(400);
+    expect(response.body.error).toBe('InvalidParamError');
+  });
+
+  test('Should delete user', async () => {
+    const body = makeBody('Password1234', 'Password1234');
+
+    const token = (
+      await request(await getHttpServer())
+        .post('/api/users/login')
+        .send({
+          email: 'email_verified@test.com',
+          password: 'Password1234',
+        })
+    ).body;
+
+    const response = await request(await getHttpServer())
+      .delete('/api/users')
       .set('Authorization', `Bearer ${token}`)
       .send(body);
 
     expect(response.statusCode).toBe(200);
-    expect(response.body).toBe(body.email);
+    expect(response.body).toBe('1');
   });
 });
