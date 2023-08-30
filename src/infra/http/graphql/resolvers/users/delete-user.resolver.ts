@@ -2,7 +2,6 @@ import { GraphQLError } from 'graphql';
 import { Resolver, Args, Mutation, Context } from '@nestjs/graphql';
 import { UseGuards } from '@nestjs/common';
 import { AbstractDeleteUserUseCase } from '@/core/domain/users/abstracts';
-import { DeleteUserResponseDTO } from '@/core/domain/users/dtos';
 import { DeleteUserInput } from '@/infra/http/graphql/inputs';
 import { GqlAuthGuard } from '@/infra/authentication/guards';
 
@@ -12,10 +11,7 @@ export class DeleteUserResolver {
 
   @UseGuards(GqlAuthGuard)
   @Mutation(() => String, { name: 'deleteUser' })
-  async handle(
-    @Context() context,
-    @Args('data') body: DeleteUserInput,
-  ): Promise<DeleteUserResponseDTO> {
+  async handle(@Context() context, @Args('data') body: DeleteUserInput) {
     const { password, passwordConfirm } = body;
 
     const userId = context.req.user;

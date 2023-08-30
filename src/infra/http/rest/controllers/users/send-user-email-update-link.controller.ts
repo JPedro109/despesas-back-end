@@ -17,7 +17,6 @@ import {
 } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
 import { AbstractSendUserEmailUpdateLinkUseCase } from '@/core/domain/users/abstracts';
-import { SendUserEmailUpdateLinkResponseDTO } from '@/core/domain/users/dtos';
 import {
   ErrorDTO,
   InternalServerErrorDTO,
@@ -68,7 +67,7 @@ export class SendUserEmailUpdateLinkController {
     @Req() req,
     @Body()
     body: SendUserEmailUpdateLinkBodyDTO,
-  ): Promise<SendUserEmailUpdateLinkResponseDTO> {
+  ) {
     const { email } = body;
 
     const userId = req.user;

@@ -2,7 +2,6 @@ import { GraphQLError } from 'graphql';
 import { Resolver, Args, Mutation, Context } from '@nestjs/graphql';
 import { UseGuards } from '@nestjs/common';
 import { AbstractUpdateUserPasswordUseCase } from '@/core/domain/users/abstracts';
-import { UpdateUserPasswordResponseDTO } from '@/core/domain/users/dtos';
 import { UpdateUserPasswordInput } from '@/infra/http/graphql/inputs';
 import { GqlAuthGuard } from '@/infra/authentication/guards';
 
@@ -16,7 +15,7 @@ export class UpdateUserPasswordResolver {
     @Context() context,
     @Args('data')
     body: UpdateUserPasswordInput,
-  ): Promise<UpdateUserPasswordResponseDTO> {
+  ) {
     const { password, newPassword, newPasswordConfirm } = body;
 
     const userId = context.req.user;

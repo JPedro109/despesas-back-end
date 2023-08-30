@@ -17,7 +17,6 @@ import {
 } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
 import { AbstractDeleteUserUseCase } from '@/core/domain/users/abstracts';
-import { DeleteUserResponseDTO } from '@/core/domain/users/dtos';
 import {
   DeleteUserBodyDTO,
   ErrorDTO,
@@ -55,10 +54,7 @@ export class DeleteUserController {
   @UseGuards(AuthGuard('jwt'))
   @HttpCode(200)
   @Delete()
-  async handle(
-    @Req() req,
-    @Body() body: DeleteUserBodyDTO,
-  ): Promise<DeleteUserResponseDTO> {
+  async handle(@Req() req, @Body() body: DeleteUserBodyDTO) {
     const { password, passwordConfirm } = body;
 
     const userId = req.user;

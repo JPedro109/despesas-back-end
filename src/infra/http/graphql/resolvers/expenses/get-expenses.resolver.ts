@@ -1,7 +1,6 @@
 import { Context, Query, Resolver } from '@nestjs/graphql';
 import { UseGuards } from '@nestjs/common';
 import { AbstractGetExpensesUseCase } from '@/core/domain/expenses/abstracts';
-import { GetExpensesResponseDTO } from '@/core/domain/expenses/dtos';
 import { GqlAuthGuard } from '@/infra/authentication/guards';
 import { ExpenseType } from '@/infra/http/graphql/types';
 
@@ -11,7 +10,7 @@ export class GetExpensesResolver {
 
   @UseGuards(GqlAuthGuard)
   @Query(() => [ExpenseType], { name: 'getExpenses' })
-  async handle(@Context() context): Promise<GetExpensesResponseDTO> {
+  async handle(@Context() context) {
     const userId = context.req.user;
 
     const response = await this.useCase.execute({

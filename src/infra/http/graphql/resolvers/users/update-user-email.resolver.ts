@@ -2,7 +2,6 @@ import { GraphQLError } from 'graphql';
 import { Resolver, Args, Mutation, Context } from '@nestjs/graphql';
 import { UseGuards } from '@nestjs/common';
 import { AbstractUpdateUserEmailUseCase } from '@/core/domain/users/abstracts';
-import { UpdateUserEmailResponseDTO } from '@/core/domain/users/dtos';
 import { UpdateUserEmailInput } from '@/infra/http/graphql/inputs';
 import { GqlAuthGuard } from '@/infra/authentication/guards';
 
@@ -16,7 +15,7 @@ export class UpdateUserEmailResolver {
     @Context() context,
     @Args('data')
     body: UpdateUserEmailInput,
-  ): Promise<UpdateUserEmailResponseDTO> {
+  ) {
     const { email, code } = body;
 
     const userId = context.req.user;

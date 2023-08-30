@@ -18,7 +18,6 @@ import {
 } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
 import { AbstractUpdateExpenseUseCase } from '@/core/domain/expenses/abstracts';
-import { UpdateExpenseResponseDTO } from '@/core/domain/expenses/dtos';
 import { NotFoundError } from '@/core/errors';
 import {
   ErrorDTO,
@@ -75,7 +74,7 @@ export class UpdateExpenseController {
   async handle(
     @Param() param: UpdateExpenseParamsDTO,
     @Body() body: UpdateExpenseUserBodyDTO,
-  ): Promise<UpdateExpenseResponseDTO> {
+  ) {
     const { id } = param;
 
     const { expenseName, expenseValue, dueDate } = body;

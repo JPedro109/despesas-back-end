@@ -18,7 +18,6 @@ import {
 } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
 import { AbstractUpdateUserEmailUseCase } from '@/core/domain/users/abstracts';
-import { UpdateUserEmailResponseDTO } from '@/core/domain/users/dtos';
 import {
   ErrorDTO,
   InternalServerErrorDTO,
@@ -68,7 +67,7 @@ export class UpdateUserEmailController {
     @Req() req,
     @Query()
     body: UpdateUserEmailBodyDTO,
-  ): Promise<UpdateUserEmailResponseDTO> {
+  ) {
     const { email, code } = body;
 
     const userId = req.user;

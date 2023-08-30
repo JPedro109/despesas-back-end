@@ -2,7 +2,6 @@ import { GraphQLError } from 'graphql';
 import { Resolver, Args, Mutation } from '@nestjs/graphql';
 import { UseGuards } from '@nestjs/common';
 import { AbstractUpdateExpenseUseCase } from '@/core/domain/expenses/abstracts';
-import { UpdateExpenseResponseDTO } from '@/core/domain/expenses/dtos';
 import { UpdateExpenseInput } from '@/infra/http/graphql/inputs';
 import { GqlAuthGuard } from '@/infra/authentication/guards';
 import { ExpenseType } from '@/infra/http/graphql/types';
@@ -13,9 +12,7 @@ export class UpdateExpenseResolver {
 
   @UseGuards(GqlAuthGuard)
   @Mutation(() => ExpenseType, { name: 'updateExpense' })
-  async handle(
-    @Args('data') body: UpdateExpenseInput,
-  ): Promise<UpdateExpenseResponseDTO> {
+  async handle(@Args('data') body: UpdateExpenseInput) {
     const { id, expenseName, expenseValue, dueDate } = body;
 
     const response = await this.useCase.execute({

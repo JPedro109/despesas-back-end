@@ -2,7 +2,6 @@ import { GraphQLError } from 'graphql';
 import { Resolver, Args, Mutation } from '@nestjs/graphql';
 import { UseGuards } from '@nestjs/common';
 import { AbstractDeleteExpenseUseCase } from '@/core/domain/expenses/abstracts';
-import { DeleteExpenseResponseDTO } from '@/core/domain/expenses/dtos';
 import { DeleteExpenseInput } from '@/infra/http/graphql/inputs';
 import { GqlAuthGuard } from '@/infra/authentication/guards';
 import { ExpenseType } from '@/infra/http/graphql/types';
@@ -13,9 +12,7 @@ export class DeleteExpenseResolver {
 
   @UseGuards(GqlAuthGuard)
   @Mutation(() => ExpenseType, { name: 'deleteExpense' })
-  async handle(
-    @Args('data') body: DeleteExpenseInput,
-  ): Promise<DeleteExpenseResponseDTO> {
+  async handle(@Args('data') body: DeleteExpenseInput) {
     const { id } = body;
 
     const response = await this.useCase.execute({

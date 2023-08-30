@@ -16,7 +16,6 @@ import {
 } from '@nestjs/swagger';
 import { NotFoundError, UnauthorizedError } from '@/core/errors';
 import { AbstractUserVerifyEmailUseCase } from '@/core/domain/users/abstracts';
-import { UserVerifyEmailResponseDTO } from '@/core/domain/users/dtos';
 import {
   ErrorDTO,
   InternalServerErrorDTO,
@@ -66,9 +65,7 @@ export class UserVerifyEmailController {
   })
   @HttpCode(200)
   @Patch('verify-email')
-  async handle(
-    @Query() query: UserVerifyEmailQueryDTO,
-  ): Promise<UserVerifyEmailResponseDTO> {
+  async handle(@Query() query: UserVerifyEmailQueryDTO) {
     const { email, code } = query;
 
     const response = await this.useCase.execute({

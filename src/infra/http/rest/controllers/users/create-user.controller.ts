@@ -13,7 +13,6 @@ import {
   getSchemaPath,
 } from '@nestjs/swagger';
 import { AbstractCreateUserUseCase } from '@/core/domain/users/abstracts';
-import { CreateUserResponseDTO } from '@/core/domain/users/dtos';
 import {
   CreateUserBodyDTO,
   ErrorDTO,
@@ -49,9 +48,7 @@ export class CreateUserController {
   })
   @HttpCode(201)
   @Post()
-  async handle(
-    @Body() body: CreateUserBodyDTO,
-  ): Promise<CreateUserResponseDTO> {
+  async handle(@Body() body: CreateUserBodyDTO) {
     const { email, password, passwordConfirm } = body;
 
     const response = await this.useCase.execute({

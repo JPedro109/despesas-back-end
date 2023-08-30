@@ -16,7 +16,6 @@ import {
 } from '@nestjs/swagger';
 import { NotFoundError } from '@/core/errors';
 import { AbstractRecoverUserPasswordUseCase } from '@/core/domain/users/abstracts';
-import { RecoverUserPasswordResponseDTO } from '@/core/domain/users/dtos';
 import {
   RecoverUserPasswordQueryDTO,
   RecoverUserPasswordBodyDTO,
@@ -65,7 +64,7 @@ export class RecoverUserPasswordController {
     query: RecoverUserPasswordQueryDTO,
     @Body()
     body: RecoverUserPasswordBodyDTO,
-  ): Promise<RecoverUserPasswordResponseDTO> {
+  ) {
     const { password, passwordConfirm } = body;
     const { email, code } = query;
 

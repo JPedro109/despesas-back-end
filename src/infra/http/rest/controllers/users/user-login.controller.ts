@@ -14,7 +14,6 @@ import {
 } from '@nestjs/swagger';
 import { UnauthorizedError } from '@/core/errors';
 import { AbstractUserLoginUseCase } from '@/core/domain/users/abstracts';
-import { UserLoginResponseDTO } from '@/core/domain/users/dtos';
 import {
   ErrorDTO,
   InternalServerErrorDTO,
@@ -57,7 +56,7 @@ export class UserLoginController {
   })
   @HttpCode(200)
   @Post('login')
-  async handle(@Body() body: UserLoginBodyDTO): Promise<UserLoginResponseDTO> {
+  async handle(@Body() body: UserLoginBodyDTO) {
     const { email, password } = body;
 
     const response = await this.useCase.execute({

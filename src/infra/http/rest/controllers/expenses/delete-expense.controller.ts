@@ -16,7 +16,6 @@ import {
 } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
 import { AbstractDeleteExpenseUseCase } from '@/core/domain/expenses/abstracts';
-import { DeleteExpenseResponseDTO } from '@/core/domain/expenses/dtos';
 import { NotFoundError } from '@/core/errors';
 import {
   DeleteExpenseParamsDTO,
@@ -69,9 +68,7 @@ export class DeleteExpenseController {
   @UseGuards(AuthGuard('jwt'))
   @HttpCode(200)
   @Delete(':id')
-  async handle(
-    @Param() body: DeleteExpenseParamsDTO,
-  ): Promise<DeleteExpenseResponseDTO> {
+  async handle(@Param() body: DeleteExpenseParamsDTO) {
     const { id } = body;
 
     const response = await this.useCase.execute({

@@ -17,7 +17,6 @@ import {
 } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
 import { AbstractCreateExpenseUseCase } from '@/core/domain/expenses/abstracts';
-import { CreateExpenseResponseDTO } from '@/core/domain/expenses/dtos';
 import {
   CreateExpenseUserBodyDTO,
   ErrorDTO,
@@ -62,10 +61,7 @@ export class CreateExpenseController {
   @UseGuards(AuthGuard('jwt'))
   @HttpCode(201)
   @Post()
-  async handle(
-    @Req() req,
-    @Body() body: CreateExpenseUserBodyDTO,
-  ): Promise<CreateExpenseResponseDTO> {
+  async handle(@Req() req, @Body() body: CreateExpenseUserBodyDTO) {
     const { expenseName, expenseValue, dueDate } = body;
 
     const userId = req.user;

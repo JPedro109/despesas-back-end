@@ -19,7 +19,6 @@ import {
 import { AbstractUpdateUserPasswordUseCase } from '@/core/domain/users/abstracts';
 import { AuthGuard } from '@nestjs/passport';
 import { NotFoundError } from '@/core/errors';
-import { UpdateUserPasswordResponseDTO } from '@/core/domain/users/dtos';
 import {
   ErrorDTO,
   InternalServerErrorDTO,
@@ -68,7 +67,7 @@ export class UpdateUserPasswordController {
     @Req() req,
     @Body()
     body: UpdateUserPasswordBodyDTO,
-  ): Promise<UpdateUserPasswordResponseDTO> {
+  ) {
     const { password, newPassword, newPasswordConfirm } = body;
 
     const userId = req.user;

@@ -9,7 +9,6 @@ import {
 } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
 import { AbstractGetExpensesUseCase } from '@/core/domain/expenses/abstracts';
-import { GetExpensesResponseDTO } from '@/core/domain/expenses/dtos';
 import { ErrorDTO, InternalServerErrorDTO } from '@/infra/http/rest/dtos';
 
 @ApiTags('Expenses')
@@ -57,7 +56,7 @@ export class GetExpensesController {
   @UseGuards(AuthGuard('jwt'))
   @HttpCode(200)
   @Get()
-  async handle(@Req() req): Promise<GetExpensesResponseDTO> {
+  async handle(@Req() req) {
     const userId = req.user;
 
     const response = await this.useCase.execute({

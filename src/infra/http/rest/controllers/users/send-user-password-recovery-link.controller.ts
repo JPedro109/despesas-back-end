@@ -14,7 +14,6 @@ import {
 } from '@nestjs/swagger';
 import { NotFoundError } from '@/core/errors';
 import { AbstractSendUserPasswordRecoveryLinkUseCase } from '@/core/domain/users/abstracts';
-import { SendUserPasswordRecoveryLinkResponseDTO } from '@/core/domain/users/dtos';
 import {
   ErrorDTO,
   InternalServerErrorDTO,
@@ -62,7 +61,7 @@ export class SendUserPasswordRecoveryLinkController {
   async handle(
     @Body()
     body: SendUserPasswordRecoveryLinkBodyDTO,
-  ): Promise<SendUserPasswordRecoveryLinkResponseDTO> {
+  ) {
     const { email } = body;
 
     const response = await this.useCase.execute({
