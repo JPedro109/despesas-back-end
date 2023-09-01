@@ -1,4 +1,4 @@
-import { InvalidExpenseValueError } from './errors';
+import { InvalidExpenseValueError } from './error';
 
 export class ExpenseValue {
   private readonly _expenseValue: number;
