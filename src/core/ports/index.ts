@@ -9,7 +9,4 @@ export * from './queue/abstract';
 
 export * from './mail/abstract';
 
-export * from './unit-of-work/abstract';
-
-export * from './log-repository/abstract';
-export * from './log-repository/model';
+export * from './database';
