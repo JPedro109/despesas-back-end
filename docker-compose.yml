@@ -34,7 +34,7 @@ services:
 
   queue:
     image: "rabbitmq:3.8-management-alpine"
-    container_name: queue-api-letmeask
+    container_name: queue-api-despesas
     hostname: rabbitmq
     ports:
       - "15672:15672"
