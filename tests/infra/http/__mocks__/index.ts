@@ -27,19 +27,19 @@ export const setup = async () => {
     app.useGlobalPipes(new ValidationPipeCustom());
 
     await app.init();
+    await QueueHelper.connect();
   });
 
   beforeEach(async () => {
     await module.get<MockRepository>(MockRepository).createMocksToTestRoutes();
-    await QueueHelper.connect();
   });
 
   afterEach(async () => {
     await module.get<MockRepository>(MockRepository).deleteMocks();
-    await QueueHelper.disconnect();
   });
 
   afterAll(async () => {
+    await QueueHelper.disconnect();
     await app.close();
   });
 };
