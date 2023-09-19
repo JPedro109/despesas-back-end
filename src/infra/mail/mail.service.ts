@@ -1,10 +1,10 @@
-import { Injectable } from '@nestjs/common';
-import { QUEUE_NAME } from '@/shared';
-import { AbstractMailService, AbstractQueue } from '@/core/ports';
+import { Inject, Injectable } from '@nestjs/common';
+import { ClientProxy } from '@nestjs/microservices';
+import { AbstractMailService } from '@/core/ports';
 
 @Injectable()
 export class MailService implements AbstractMailService {
-  constructor(private readonly queue: AbstractQueue) {}
+  constructor(@Inject('MAIL_SERVICE') private client: ClientProxy) {}
 
   async sendMail(
     to: string,
@@ -19,6 +19,6 @@ export class MailService implements AbstractMailService {
       context,
     };
 
-    await this.queue.sendMessage(QUEUE_NAME, email);
+    this.client.emit('send_email', email);
   }
 }

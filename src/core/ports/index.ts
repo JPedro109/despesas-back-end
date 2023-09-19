@@ -5,8 +5,6 @@ export * from './authentication/abstract';
 export * from './authentication/error';
 export * from './authentication/type';
 
-export * from './queue/abstract';
-
 export * from './mail/abstract';
 
 export * from './database';

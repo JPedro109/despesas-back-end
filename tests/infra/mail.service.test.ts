@@ -1,28 +1,18 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { QueueModule } from '@/infra';
 import { MailService } from '@/infra/mail/mail.service';
-import { QueueService } from '@/infra/queue/queue.service';
-import { QueueHelper } from '@/infra/queue/helper';
-import { AbstractQueue } from '@/core/ports';
 
 describe('Infra - MailService', () => {
   let sut: MailService;
 
   beforeEach(async () => {
     const app: TestingModule = await Test.createTestingModule({
-      providers: [
-        MailService,
-        {
-          provide: AbstractQueue,
-          useClass: QueueService,
-        },
-      ],
+      imports: [QueueModule],
+      providers: [MailService],
     }).compile();
 
     sut = app.get<MailService>(MailService);
-    await QueueHelper.connect();
   });
-
-  afterAll(async () => await QueueHelper.disconnect());
 
   test('Should send email | sendEmail', async () => {
     const email = 'email@test.com';

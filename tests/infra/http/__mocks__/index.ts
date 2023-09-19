@@ -3,7 +3,6 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { ValidationPipeCustom } from '@/shared/custom';
 import { HttpModule, DatabaseModule } from '@/infra';
 import { MockRepository } from '@/infra/database/prisma';
-import { QueueHelper } from '@/infra/queue/helper';
 import * as request from 'supertest';
 
 let app: INestApplication;
@@ -23,7 +22,6 @@ export const setup = async () => {
     app.useGlobalPipes(new ValidationPipeCustom());
 
     await app.init();
-    await QueueHelper.connect();
   });
 
   beforeEach(async () => {
@@ -35,7 +33,6 @@ export const setup = async () => {
   });
 
   afterAll(async () => {
-    await QueueHelper.disconnect();
     await app.close();
   });
 };
