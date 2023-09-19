@@ -1,12 +1,6 @@
 jest.setTimeout(10000);
 
-import {
-  initApp,
-  before,
-  after,
-  getHttpServer,
-  loginGraphql,
-} from '../../../__mocks__';
+import { setup, loginGraphql, getHttpServer } from '../../../__mocks__';
 
 import * as request from 'supertest';
 
@@ -23,15 +17,7 @@ const makeSutUpdateUserPassword = (
 };
 
 describe('updateUserPassword - MUTATION', () => {
-  beforeEach(async () => {
-    const { module } = await initApp();
-    await before(module);
-  });
-
-  afterEach(async () => {
-    const { module, app } = await initApp();
-    await after(app, module);
-  });
+  setup();
 
   const query =
     'mutation UpdateUserPassword($data: UpdateUserPasswordInput!) { updateUserPassword(data: $data) }';

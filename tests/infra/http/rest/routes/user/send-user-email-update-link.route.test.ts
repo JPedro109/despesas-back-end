@@ -1,4 +1,5 @@
-import { initApp, before, after, getHttpServer } from '../../../__mocks__';
+import { INestApplication } from '@nestjs/common';
+import { setup, getHttpServer } from '../../../__mocks__';
 import * as request from 'supertest';
 
 const makeBodySendUserEmailUpdateLink = (email: unknown) => {
@@ -8,15 +9,7 @@ const makeBodySendUserEmailUpdateLink = (email: unknown) => {
 };
 
 describe('/api/users/send-email-update-link - PATCH', () => {
-  beforeEach(async () => {
-    const { module } = await initApp();
-    await before(module);
-  });
-
-  afterEach(async () => {
-    const { module, app } = await initApp();
-    await after(app, module);
-  });
+  setup();
 
   test('Should not send user email update link, because email is empty', async () => {
     const body = makeBodySendUserEmailUpdateLink('');

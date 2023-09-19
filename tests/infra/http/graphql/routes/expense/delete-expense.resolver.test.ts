@@ -1,10 +1,6 @@
-import {
-  initApp,
-  before,
-  after,
-  getHttpServer,
-  loginGraphql,
-} from '../../../__mocks__';
+jest.setTimeout(10000);
+
+import { setup, loginGraphql, getHttpServer } from '../../../__mocks__';
 import * as request from 'supertest';
 
 const makeBodyDeleteExpense = (id: string) => {
@@ -14,15 +10,7 @@ const makeBodyDeleteExpense = (id: string) => {
 };
 
 describe('deleteExpense - MUTATION', () => {
-  beforeEach(async () => {
-    const { module } = await initApp();
-    await before(module);
-  });
-
-  afterEach(async () => {
-    const { module, app } = await initApp();
-    await after(app, module);
-  });
+  setup();
 
   const query =
     'mutation DeleteExpense($data: DeleteExpenseInput!) { deleteExpense(data: $data) { expenseName, expenseValue } }';

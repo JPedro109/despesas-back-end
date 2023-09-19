@@ -1,4 +1,5 @@
-import { initApp, before, after, getHttpServer } from '../../../__mocks__';
+import { INestApplication } from '@nestjs/common';
+import { setup, getHttpServer } from '../../../__mocks__';
 import * as request from 'supertest';
 
 const makeBody = (email: unknown, password: unknown) => {
@@ -9,15 +10,7 @@ const makeBody = (email: unknown, password: unknown) => {
 };
 
 describe('/api/users/login - POST', () => {
-  beforeEach(async () => {
-    const { module } = await initApp();
-    await before(module);
-  });
-
-  afterEach(async () => {
-    const { module, app } = await initApp();
-    await after(app, module);
-  });
+  setup();
 
   test('Should not login user, because email is empty', async () => {
     const body = makeBody('', 'Password1234');

@@ -1,6 +1,6 @@
 jest.setTimeout(10000);
 
-import { initApp, before, after, getHttpServer } from '../../../__mocks__';
+import { setup, getHttpServer } from '../../../__mocks__';
 import * as request from 'supertest';
 
 const makeBody = (password: unknown, passwordConfirm: unknown) => {
@@ -11,15 +11,7 @@ const makeBody = (password: unknown, passwordConfirm: unknown) => {
 };
 
 describe('/api/users - DELETE', () => {
-  beforeEach(async () => {
-    const { module } = await initApp();
-    await before(module);
-  });
-
-  afterEach(async () => {
-    const { module, app } = await initApp();
-    await after(app, module);
-  });
+  setup();
 
   test('Should not delete user, because password is empty', async () => {
     const body = makeBody('', 'Password1234');

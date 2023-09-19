@@ -1,4 +1,5 @@
-import { initApp, before, after, getHttpServer } from '../../../__mocks__';
+import { INestApplication } from '@nestjs/common';
+import { setup, getHttpServer } from '../../../__mocks__';
 import * as request from 'supertest';
 
 const makeBodyUpdateExpense = (
@@ -16,15 +17,7 @@ const makeBodyUpdateExpense = (
 };
 
 describe('/api/expenses/:id - PUT', () => {
-  beforeEach(async () => {
-    const { module } = await initApp();
-    await before(module);
-  });
-
-  afterEach(async () => {
-    const { module, app } = await initApp();
-    await after(app, module);
-  });
+  setup();
 
   test('Should not update expense, because expense is empty', async () => {
     const body = makeBodyUpdateExpense('4', '', 200, '3000-01-01');

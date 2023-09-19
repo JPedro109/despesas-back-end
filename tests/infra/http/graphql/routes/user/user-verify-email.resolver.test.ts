@@ -1,6 +1,6 @@
 jest.setTimeout(10000);
 
-import { initApp, before, after, getHttpServer } from '../../../__mocks__';
+import { setup, getHttpServer } from '../../../__mocks__';
 
 import * as request from 'supertest';
 
@@ -12,15 +12,7 @@ const makeBodyVerifyEmailUser = (email: string, code: string) => {
 };
 
 describe('userVerifyEmail - MUTATION', () => {
-  beforeEach(async () => {
-    const { module } = await initApp();
-    await before(module);
-  });
-
-  afterEach(async () => {
-    const { module, app } = await initApp();
-    await after(app, module);
-  });
+  setup();
 
   const query =
     'mutation UserVerifyEmail($data: UserVerifyEmailInput!) { userVerifyEmail(data: $data) }';

@@ -1,6 +1,6 @@
 jest.setTimeout(10000);
 
-import { initApp, before, after, getHttpServer } from '../../../__mocks__';
+import { setup, getHttpServer } from '../../../__mocks__';
 
 import * as request from 'supertest';
 
@@ -12,15 +12,7 @@ const makeBody = (email: unknown, password: unknown) => {
 };
 
 describe('userLogin - MUTATION', () => {
-  beforeEach(async () => {
-    const { module } = await initApp();
-    await before(module);
-  });
-
-  afterEach(async () => {
-    const { module, app } = await initApp();
-    await after(app, module);
-  });
+  setup();
 
   const query =
     'mutation UserLogin($data: UserLoginInput!) { userLogin(data: $data) }';

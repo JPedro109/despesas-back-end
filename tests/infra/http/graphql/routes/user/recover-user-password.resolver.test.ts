@@ -1,6 +1,6 @@
 jest.setTimeout(10000);
 
-import { initApp, before, after, getHttpServer } from '../../../__mocks__';
+import { setup, getHttpServer } from '../../../__mocks__';
 
 import * as request from 'supertest';
 
@@ -19,15 +19,7 @@ const makeBodyRecoverUserPassword = (
 };
 
 describe('recoverUserPassword - MUTATION', () => {
-  beforeEach(async () => {
-    const { module } = await initApp();
-    await before(module);
-  });
-
-  afterEach(async () => {
-    const { module, app } = await initApp();
-    await after(app, module);
-  });
+  setup();
 
   const query =
     'mutation RecoverUserPassword($data: RecoverUserPasswordInput!) { recoverUserPassword(data: $data) }';

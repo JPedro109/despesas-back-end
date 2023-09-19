@@ -1,16 +1,9 @@
-import { initApp, before, after, getHttpServer } from '../../../__mocks__';
+import { INestApplication } from '@nestjs/common';
+import { setup, getHttpServer } from '../../../__mocks__';
 import * as request from 'supertest';
 
 describe('/api/expenses - GET', () => {
-  beforeEach(async () => {
-    const { module } = await initApp();
-    await before(module);
-  });
-
-  afterEach(async () => {
-    const { module, app } = await initApp();
-    await after(app, module);
-  });
+  setup();
 
   test('Should get expenses', async () => {
     const token = (

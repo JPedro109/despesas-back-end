@@ -1,4 +1,5 @@
-import { initApp, before, after, getHttpServer } from '../../../__mocks__';
+import { INestApplication } from '@nestjs/common';
+import { setup, getHttpServer } from '../../../__mocks__';
 import * as request from 'supertest';
 
 const makeBodyDeleteExpense = (id: string) => {
@@ -8,15 +9,7 @@ const makeBodyDeleteExpense = (id: string) => {
 };
 
 describe('/api/expenses/:id - DELETE', () => {
-  beforeEach(async () => {
-    const { module } = await initApp();
-    await before(module);
-  });
-
-  afterEach(async () => {
-    const { module, app } = await initApp();
-    await after(app, module);
-  });
+  setup();
 
   test('Should not delete expense, because expense is not exists', async () => {
     const body = makeBodyDeleteExpense('0');
