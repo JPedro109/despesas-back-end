@@ -1,4 +1,7 @@
-import { setup, getHttpServer } from '../../../__mocks__';
+jest.setTimeout(10000);
+
+import { setup, getHttpServer, loginRest } from '../../../__mocks__';
+
 import * as request from 'supertest';
 
 const makeBodyUpdateUserEmail = (email: string, code: string) => {
@@ -14,14 +17,7 @@ describe('/api/users/email - PATCH', () => {
   test('Should not update user email, because email is empty', async () => {
     const body = makeBodyUpdateUserEmail('', 'token');
 
-    const token = (
-      await request(await getHttpServer())
-        .post('/api/users/login')
-        .send({
-          email: 'email_verified@test.com',
-          password: 'Password1234',
-        })
-    ).body;
+    const token = await loginRest('email_verified@test.com');
 
     const response = await request(await getHttpServer())
       .patch(`/api/users/email?email=${body.email}&code=${body.code}`)
@@ -34,14 +30,7 @@ describe('/api/users/email - PATCH', () => {
   test('Should not update user email, because code is empty', async () => {
     const body = makeBodyUpdateUserEmail('email@test.com', '');
 
-    const token = (
-      await request(await getHttpServer())
-        .post('/api/users/login')
-        .send({
-          email: 'email_verified@test.com',
-          password: 'Password1234',
-        })
-    ).body;
+    const token = await loginRest('email_verified@test.com');
 
     const response = await request(await getHttpServer())
       .patch(`/api/users/email?email=${body.email}&code=${body.code}`)
@@ -57,14 +46,7 @@ describe('/api/users/email - PATCH', () => {
       'invalid_code',
     );
 
-    const token = (
-      await request(await getHttpServer())
-        .post('/api/users/login')
-        .send({
-          email: 'email_verified@test.com',
-          password: 'Password1234',
-        })
-    ).body;
+    const token = await loginRest('email_verified@test.com');
 
     const response = await request(await getHttpServer())
       .patch(`/api/users/email?email=${body.email}&code=${body.code}`)
@@ -80,14 +62,7 @@ describe('/api/users/email - PATCH', () => {
       'email_code_expiry',
     );
 
-    const token = (
-      await request(await getHttpServer())
-        .post('/api/users/login')
-        .send({
-          email: 'email_verified_code_expiry@test.com',
-          password: 'Password1234',
-        })
-    ).body;
+    const token = await loginRest('email_verified_code_expiry@test.com');
 
     const response = await request(await getHttpServer())
       .patch(`/api/users/email?email=${body.email}&code=${body.code}`)
@@ -100,14 +75,7 @@ describe('/api/users/email - PATCH', () => {
   test('Should update user email', async () => {
     const body = makeBodyUpdateUserEmail('email@test.com', 'email_code');
 
-    const token = (
-      await request(await getHttpServer())
-        .post('/api/users/login')
-        .send({
-          email: 'email_verified@test.com',
-          password: 'Password1234',
-        })
-    ).body;
+    const token = await loginRest('email_verified@test.com');
 
     const response = await request(await getHttpServer())
       .patch(`/api/users/email?email=${body.email}&code=${body.code}`)

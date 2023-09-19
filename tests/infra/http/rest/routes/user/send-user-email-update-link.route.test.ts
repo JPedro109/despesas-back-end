@@ -1,4 +1,7 @@
-import { setup, getHttpServer } from '../../../__mocks__';
+jest.setTimeout(10000);
+
+import { setup, getHttpServer, loginRest } from '../../../__mocks__';
+
 import * as request from 'supertest';
 
 const makeBodySendUserEmailUpdateLink = (email: unknown) => {
@@ -13,14 +16,7 @@ describe('/api/users/send-email-update-link - PATCH', () => {
   test('Should not send user email update link, because email is empty', async () => {
     const body = makeBodySendUserEmailUpdateLink('');
 
-    const token = (
-      await request(await getHttpServer())
-        .post('/api/users/login')
-        .send({
-          email: 'email_verified@test.com',
-          password: 'Password1234',
-        })
-    ).body;
+    const token = await loginRest('email_verified@test.com');
 
     const response = await request(await getHttpServer())
       .patch('/api/users/send-email-update-link')
@@ -34,14 +30,7 @@ describe('/api/users/send-email-update-link - PATCH', () => {
   test('Should not send user email update link, because email is with type error', async () => {
     const body = makeBodySendUserEmailUpdateLink(100);
 
-    const token = (
-      await request(await getHttpServer())
-        .post('/api/users/login')
-        .send({
-          email: 'email_verified@test.com',
-          password: 'Password1234',
-        })
-    ).body;
+    const token = await loginRest('email_verified@test.com');
 
     const response = await request(await getHttpServer())
       .patch('/api/users/send-email-update-link')
@@ -55,14 +44,7 @@ describe('/api/users/send-email-update-link - PATCH', () => {
   test('Should not send user email update link, because email is invalid', async () => {
     const body = makeBodySendUserEmailUpdateLink('email.com');
 
-    const token = (
-      await request(await getHttpServer())
-        .post('/api/users/login')
-        .send({
-          email: 'email_verified@test.com',
-          password: 'Password1234',
-        })
-    ).body;
+    const token = await loginRest('email_verified@test.com');
 
     const response = await request(await getHttpServer())
       .patch('/api/users/send-email-update-link')
@@ -76,14 +58,7 @@ describe('/api/users/send-email-update-link - PATCH', () => {
   test('Should not send user email update link, because email already is register', async () => {
     const body = makeBodySendUserEmailUpdateLink('email_verified@test.com');
 
-    const token = (
-      await request(await getHttpServer())
-        .post('/api/users/login')
-        .send({
-          email: 'email_verified@test.com',
-          password: 'Password1234',
-        })
-    ).body;
+    const token = await loginRest('email_verified@test.com');
 
     const response = await request(await getHttpServer())
       .patch('/api/users/send-email-update-link')
@@ -97,14 +72,7 @@ describe('/api/users/send-email-update-link - PATCH', () => {
   test('Should send user email update link', async () => {
     const body = makeBodySendUserEmailUpdateLink('email@test.com');
 
-    const token = (
-      await request(await getHttpServer())
-        .post('/api/users/login')
-        .send({
-          email: 'email_verified@test.com',
-          password: 'Password1234',
-        })
-    ).body;
+    const token = await loginRest('email_verified@test.com');
 
     const response = await request(await getHttpServer())
       .patch('/api/users/send-email-update-link')

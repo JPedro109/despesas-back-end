@@ -1,3 +1,5 @@
+jest.setTimeout(10000);
+
 import { setup, getHttpServer } from '../../../__mocks__';
 
 import * as request from 'supertest';

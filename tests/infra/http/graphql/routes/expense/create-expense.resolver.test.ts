@@ -1,6 +1,7 @@
 jest.setTimeout(10000);
 
 import { setup, loginGraphql, getHttpServer } from '../../../__mocks__';
+
 import * as request from 'supertest';
 
 const makeBodyCreateUser = (

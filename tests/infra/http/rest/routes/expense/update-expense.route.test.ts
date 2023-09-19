@@ -1,4 +1,7 @@
-import { setup, getHttpServer } from '../../../__mocks__';
+jest.setTimeout(10000);
+
+import { setup, getHttpServer, loginRest } from '../../../__mocks__';
+
 import * as request from 'supertest';
 
 const makeBodyUpdateExpense = (
@@ -21,14 +24,7 @@ describe('/api/expenses/:id - PUT', () => {
   test('Should not update expense, because expense is empty', async () => {
     const body = makeBodyUpdateExpense('4', '', 200, '3000-01-01');
 
-    const token = (
-      await request(await getHttpServer())
-        .post('/api/users/login')
-        .send({
-          email: 'email_verified@test.com',
-          password: 'Password1234',
-        })
-    ).body;
+    const token = await loginRest('email_verified@test.com');
 
     const response = await request(await getHttpServer())
       .put(`/api/expenses/${body.id}`)
@@ -42,14 +38,7 @@ describe('/api/expenses/:id - PUT', () => {
   test('Should not update expense, because expenseValue is empty', async () => {
     const body = makeBodyUpdateExpense('4', 'expense', null, '3000-01-01');
 
-    const token = (
-      await request(await getHttpServer())
-        .post('/api/users/login')
-        .send({
-          email: 'email_verified@test.com',
-          password: 'Password1234',
-        })
-    ).body;
+    const token = await loginRest('email_verified@test.com');
 
     const response = await request(await getHttpServer())
       .put(`/api/expenses/${body.id}`)
@@ -63,14 +52,7 @@ describe('/api/expenses/:id - PUT', () => {
   test('Should not update expense, because due date is empty', async () => {
     const body = makeBodyUpdateExpense('4', 'expense', 200, null);
 
-    const token = (
-      await request(await getHttpServer())
-        .post('/api/users/login')
-        .send({
-          email: 'email_verified@test.com',
-          password: 'Password1234',
-        })
-    ).body;
+    const token = await loginRest('email_verified@test.com');
 
     const response = await request(await getHttpServer())
       .put(`/api/expenses/${body.id}`)
@@ -84,14 +66,7 @@ describe('/api/expenses/:id - PUT', () => {
   test('Should not update expense, because expense is with type error', async () => {
     const body = makeBodyUpdateExpense('4', 100, 200, '3000-01-01');
 
-    const token = (
-      await request(await getHttpServer())
-        .post('/api/users/login')
-        .send({
-          email: 'email_verified@test.com',
-          password: 'Password1234',
-        })
-    ).body;
+    const token = await loginRest('email_verified@test.com');
 
     const response = await request(await getHttpServer())
       .put(`/api/expenses/${body.id}`)
@@ -110,14 +85,7 @@ describe('/api/expenses/:id - PUT', () => {
       '3000-01-01',
     );
 
-    const token = (
-      await request(await getHttpServer())
-        .post('/api/users/login')
-        .send({
-          email: 'email_verified@test.com',
-          password: 'Password1234',
-        })
-    ).body;
+    const token = await loginRest('email_verified@test.com');
 
     const response = await request(await getHttpServer())
       .put(`/api/expenses/${body.id}`)
@@ -131,14 +99,7 @@ describe('/api/expenses/:id - PUT', () => {
   test('Should not update expense, because due date is with type error', async () => {
     const body = makeBodyUpdateExpense('4', 'expense', 200, '3000-0-0');
 
-    const token = (
-      await request(await getHttpServer())
-        .post('/api/users/login')
-        .send({
-          email: 'email_verified@test.com',
-          password: 'Password1234',
-        })
-    ).body;
+    const token = await loginRest('email_verified@test.com');
 
     const response = await request(await getHttpServer())
       .put(`/api/expenses/${body.id}`)
@@ -152,14 +113,7 @@ describe('/api/expenses/:id - PUT', () => {
   test('Should not update expense, because expense name is incorrect', async () => {
     const body = makeBodyUpdateExpense('4', 'c'.repeat(300), 200, '3000-01-01');
 
-    const token = (
-      await request(await getHttpServer())
-        .post('/api/users/login')
-        .send({
-          email: 'email_verified@test.com',
-          password: 'Password1234',
-        })
-    ).body;
+    const token = await loginRest('email_verified@test.com');
 
     const response = await request(await getHttpServer())
       .put(`/api/expenses/${body.id}`)
@@ -173,14 +127,7 @@ describe('/api/expenses/:id - PUT', () => {
   test('Should not update expense, because expense value is incorrect', async () => {
     const body = makeBodyUpdateExpense('4', 'expense', -200, '3000-01-01');
 
-    const token = (
-      await request(await getHttpServer())
-        .post('/api/users/login')
-        .send({
-          email: 'email_verified@test.com',
-          password: 'Password1234',
-        })
-    ).body;
+    const token = await loginRest('email_verified@test.com');
 
     const response = await request(await getHttpServer())
       .put(`/api/expenses/${body.id}`)
@@ -194,14 +141,7 @@ describe('/api/expenses/:id - PUT', () => {
   test('Should not update expense, because due date is incorrect', async () => {
     const body = makeBodyUpdateExpense('4', 'expense', 200, '2000-01-01');
 
-    const token = (
-      await request(await getHttpServer())
-        .post('/api/users/login')
-        .send({
-          email: 'email_verified@test.com',
-          password: 'Password1234',
-        })
-    ).body;
+    const token = await loginRest('email_verified@test.com');
 
     const response = await request(await getHttpServer())
       .put(`/api/expenses/${body.id}`)
@@ -215,14 +155,7 @@ describe('/api/expenses/:id - PUT', () => {
   test('Should not update expense, because expense is not exists', async () => {
     const body = makeBodyUpdateExpense('0', 'expense', 200, '2000-01-01');
 
-    const token = (
-      await request(await getHttpServer())
-        .post('/api/users/login')
-        .send({
-          email: 'email_verified@test.com',
-          password: 'Password1234',
-        })
-    ).body;
+    const token = await loginRest('email_verified@test.com');
 
     const response = await request(await getHttpServer())
       .put(`/api/expenses/${body.id}`)
@@ -236,14 +169,7 @@ describe('/api/expenses/:id - PUT', () => {
   test('Should update expense', async () => {
     const body = makeBodyUpdateExpense('4', 'expense-two', 300, '3000-02-01');
 
-    const token = (
-      await request(await getHttpServer())
-        .post('/api/users/login')
-        .send({
-          email: 'email_verified@test.com',
-          password: 'Password1234',
-        })
-    ).body;
+    const token = await loginRest('email_verified@test.com');
 
     const response = await request(await getHttpServer())
       .put(`/api/expenses/${body.id}`)

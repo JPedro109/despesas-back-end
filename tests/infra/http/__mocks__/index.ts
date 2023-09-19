@@ -8,10 +8,6 @@ import * as request from 'supertest';
 
 let app: INestApplication;
 
-export const getHttpServer = () => {
-  return app.getHttpServer();
-};
-
 export const setup = async () => {
   let module: TestingModule;
 
@@ -42,6 +38,21 @@ export const setup = async () => {
     await QueueHelper.disconnect();
     await app.close();
   });
+};
+
+export const getHttpServer = () => {
+  return app.getHttpServer();
+};
+
+export const loginRest = async (email: string) => {
+  return (
+    await request(await getHttpServer())
+      .post('/api/users/login')
+      .send({
+        email,
+        password: 'Password1234',
+      })
+  ).body;
 };
 
 export const loginGraphql = async (email: string) => {

@@ -1,4 +1,7 @@
-import { setup, getHttpServer } from '../../../__mocks__';
+jest.setTimeout(10000);
+
+import { setup, getHttpServer, loginRest } from '../../../__mocks__';
+
 import * as request from 'supertest';
 
 const makeSutUpdateUserPassword = (
@@ -23,14 +26,7 @@ describe('/api/users/password - PATCH', () => {
       'Password12345',
     );
 
-    const token = (
-      await request(await getHttpServer())
-        .post('/api/users/login')
-        .send({
-          email: 'email_verified@test.com',
-          password: 'Password1234',
-        })
-    ).body;
+    const token = await loginRest('email_verified@test.com');
 
     const response = await request(await getHttpServer())
       .patch('/api/users/password')
@@ -44,14 +40,7 @@ describe('/api/users/password - PATCH', () => {
   test('Should not update user password, because new password is empty', async () => {
     const body = makeSutUpdateUserPassword('Password1234', '', 'Password12345');
 
-    const token = (
-      await request(await getHttpServer())
-        .post('/api/users/login')
-        .send({
-          email: 'email_verified@test.com',
-          password: 'Password1234',
-        })
-    ).body;
+    const token = await loginRest('email_verified@test.com');
 
     const response = await request(await getHttpServer())
       .patch('/api/users/password')
@@ -65,14 +54,7 @@ describe('/api/users/password - PATCH', () => {
   test('Should not update user password, because new password confirm is empty', async () => {
     const body = makeSutUpdateUserPassword('Password1234', 'Password12345', '');
 
-    const token = (
-      await request(await getHttpServer())
-        .post('/api/users/login')
-        .send({
-          email: 'email_verified@test.com',
-          password: 'Password1234',
-        })
-    ).body;
+    const token = await loginRest('email_verified@test.com');
 
     const response = await request(await getHttpServer())
       .patch('/api/users/password')
@@ -90,14 +72,7 @@ describe('/api/users/password - PATCH', () => {
       'Password12345',
     );
 
-    const token = (
-      await request(await getHttpServer())
-        .post('/api/users/login')
-        .send({
-          email: 'email_verified@test.com',
-          password: 'Password1234',
-        })
-    ).body;
+    const token = await loginRest('email_verified@test.com');
 
     const response = await request(await getHttpServer())
       .patch('/api/users/password')
@@ -115,14 +90,7 @@ describe('/api/users/password - PATCH', () => {
       'Password12345',
     );
 
-    const token = (
-      await request(await getHttpServer())
-        .post('/api/users/login')
-        .send({
-          email: 'email_verified@test.com',
-          password: 'Password1234',
-        })
-    ).body;
+    const token = await loginRest('email_verified@test.com');
 
     const response = await request(await getHttpServer())
       .patch('/api/users/password')
@@ -140,14 +108,7 @@ describe('/api/users/password - PATCH', () => {
       100,
     );
 
-    const token = (
-      await request(await getHttpServer())
-        .post('/api/users/login')
-        .send({
-          email: 'email_verified@test.com',
-          password: 'Password1234',
-        })
-    ).body;
+    const token = await loginRest('email_verified@test.com');
 
     const response = await request(await getHttpServer())
       .patch('/api/users/password')
@@ -165,14 +126,7 @@ describe('/api/users/password - PATCH', () => {
       'Password12345',
     );
 
-    const token = (
-      await request(await getHttpServer())
-        .post('/api/users/login')
-        .send({
-          email: 'email_verified@test.com',
-          password: 'Password1234',
-        })
-    ).body;
+    const token = await loginRest('email_verified@test.com');
 
     const response = await request(await getHttpServer())
       .patch('/api/users/password')
@@ -190,14 +144,7 @@ describe('/api/users/password - PATCH', () => {
       'password',
     );
 
-    const token = (
-      await request(await getHttpServer())
-        .post('/api/users/login')
-        .send({
-          email: 'email_verified@test.com',
-          password: 'Password1234',
-        })
-    ).body;
+    const token = await loginRest('email_verified@test.com');
 
     const response = await request(await getHttpServer())
       .patch('/api/users/password')
@@ -215,14 +162,7 @@ describe('/api/users/password - PATCH', () => {
       'Password12345',
     );
 
-    const token = (
-      await request(await getHttpServer())
-        .post('/api/users/login')
-        .send({
-          email: 'email_verified@test.com',
-          password: 'Password1234',
-        })
-    ).body;
+    const token = await loginRest('email_verified@test.com');
 
     const response = await request(await getHttpServer())
       .patch('/api/users/password')
@@ -240,14 +180,7 @@ describe('/api/users/password - PATCH', () => {
       'Password1234',
     );
 
-    const token = (
-      await request(await getHttpServer())
-        .post('/api/users/login')
-        .send({
-          email: 'email_verified@test.com',
-          password: 'Password1234',
-        })
-    ).body;
+    const token = await loginRest('email_verified@test.com');
 
     const response = await request(await getHttpServer())
       .patch('/api/users/password')
@@ -265,14 +198,7 @@ describe('/api/users/password - PATCH', () => {
       'Password12345',
     );
 
-    const token = (
-      await request(await getHttpServer())
-        .post('/api/users/login')
-        .send({
-          email: 'email_verified@test.com',
-          password: 'Password1234',
-        })
-    ).body;
+    const token = await loginRest('email_verified@test.com');
 
     const response = await request(await getHttpServer())
       .patch('/api/users/password')

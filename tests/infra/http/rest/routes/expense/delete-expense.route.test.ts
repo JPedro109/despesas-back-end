@@ -1,4 +1,7 @@
-import { setup, getHttpServer } from '../../../__mocks__';
+jest.setTimeout(10000);
+
+import { setup, getHttpServer, loginRest } from '../../../__mocks__';
+
 import * as request from 'supertest';
 
 const makeBodyDeleteExpense = (id: string) => {
@@ -13,14 +16,7 @@ describe('/api/expenses/:id - DELETE', () => {
   test('Should not delete expense, because expense is not exists', async () => {
     const body = makeBodyDeleteExpense('0');
 
-    const token = (
-      await request(await getHttpServer())
-        .post('/api/users/login')
-        .send({
-          email: 'email_verified@test.com',
-          password: 'Password1234',
-        })
-    ).body;
+    const token = await loginRest('email_verified@test.com');
 
     const response = await request(await getHttpServer())
       .delete(`/api/expenses/${body.id}`)
@@ -33,14 +29,7 @@ describe('/api/expenses/:id - DELETE', () => {
   test('Should delete expense', async () => {
     const body = makeBodyDeleteExpense('4');
 
-    const token = (
-      await request(await getHttpServer())
-        .post('/api/users/login')
-        .send({
-          email: 'email_verified@test.com',
-          password: 'Password1234',
-        })
-    ).body;
+    const token = await loginRest('email_verified@test.com');
 
     const response = await request(await getHttpServer())
       .delete(`/api/expenses/${body.id}`)

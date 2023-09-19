@@ -1,6 +1,7 @@
 jest.setTimeout(10000);
 
-import { setup, getHttpServer } from '../../../__mocks__';
+import { setup, getHttpServer, loginRest } from '../../../__mocks__';
+
 import * as request from 'supertest';
 
 const makeBody = (password: unknown, passwordConfirm: unknown) => {
@@ -16,14 +17,7 @@ describe('/api/users - DELETE', () => {
   test('Should not delete user, because password is empty', async () => {
     const body = makeBody('', 'Password1234');
 
-    const token = (
-      await request(await getHttpServer())
-        .post('/api/users/login')
-        .send({
-          email: 'email_verified@test.com',
-          password: 'Password1234',
-        })
-    ).body;
+    const token = await loginRest('email_verified@test.com');
 
     const response = await request(await getHttpServer())
       .delete('/api/users')
@@ -37,14 +31,7 @@ describe('/api/users - DELETE', () => {
   test('Should not delete user, because passwordConfirm is empty', async () => {
     const body = makeBody('Password1234', '');
 
-    const token = (
-      await request(await getHttpServer())
-        .post('/api/users/login')
-        .send({
-          email: 'email_verified@test.com',
-          password: 'Password1234',
-        })
-    ).body;
+    const token = await loginRest('email_verified@test.com');
 
     const response = await request(await getHttpServer())
       .delete('/api/users')
@@ -58,14 +45,7 @@ describe('/api/users - DELETE', () => {
   test('Should not delete user, because password is with type error', async () => {
     const body = makeBody(100, 'Password1234');
 
-    const token = (
-      await request(await getHttpServer())
-        .post('/api/users/login')
-        .send({
-          email: 'email_verified@test.com',
-          password: 'Password1234',
-        })
-    ).body;
+    const token = await loginRest('email_verified@test.com');
 
     const response = await request(await getHttpServer())
       .delete('/api/users')
@@ -79,14 +59,7 @@ describe('/api/users - DELETE', () => {
   test('Should not delete user, because passwordConfirm is with type error', async () => {
     const body = makeBody('Password1234', 100);
 
-    const token = (
-      await request(await getHttpServer())
-        .post('/api/users/login')
-        .send({
-          email: 'email_verified@test.com',
-          password: 'Password1234',
-        })
-    ).body;
+    const token = await loginRest('email_verified@test.com');
 
     const response = await request(await getHttpServer())
       .delete('/api/users')
@@ -100,14 +73,7 @@ describe('/api/users - DELETE', () => {
   test('Should not delete user, because passwords is not match', async () => {
     const body = makeBody('Password1234', 'Password12345');
 
-    const token = (
-      await request(await getHttpServer())
-        .post('/api/users/login')
-        .send({
-          email: 'email_verified@test.com',
-          password: 'Password1234',
-        })
-    ).body;
+    const token = await loginRest('email_verified@test.com');
 
     const response = await request(await getHttpServer())
       .delete('/api/users')
@@ -121,14 +87,7 @@ describe('/api/users - DELETE', () => {
   test('Should not delete user, because password is invalid', async () => {
     const body = makeBody('password', 'password');
 
-    const token = (
-      await request(await getHttpServer())
-        .post('/api/users/login')
-        .send({
-          email: 'email_verified@test.com',
-          password: 'Password1234',
-        })
-    ).body;
+    const token = await loginRest('email_verified@test.com');
 
     const response = await request(await getHttpServer())
       .delete('/api/users')
@@ -142,14 +101,7 @@ describe('/api/users - DELETE', () => {
   test('Should delete user', async () => {
     const body = makeBody('Password1234', 'Password1234');
 
-    const token = (
-      await request(await getHttpServer())
-        .post('/api/users/login')
-        .send({
-          email: 'email_verified@test.com',
-          password: 'Password1234',
-        })
-    ).body;
+    const token = await loginRest('email_verified@test.com');
 
     const response = await request(await getHttpServer())
       .delete('/api/users')
