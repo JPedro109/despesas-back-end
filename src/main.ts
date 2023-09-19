@@ -4,6 +4,7 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import {
   ENVIRONMENT,
   PORT,
+  APP_URL,
   ValidationPipeCustom,
   LoggerCustom,
 } from '@/shared';
@@ -14,7 +15,17 @@ import { QueueHelper } from '@/infra/queue/helper';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  app.enableCors();
+  app.enableCors({
+    origin: (origin: string, callback: any) => {
+      const allowList = [APP_URL];
+
+      if (ENVIRONMENT === 'TEST') return callback(null, true);
+
+      if (allowList.indexOf(origin) !== -1) return callback(null, true);
+
+      callback(new Error('Not allowed cors'));
+    },
+  });
 
   ENVIRONMENT == 'TEST'
     ? SwaggerModule.setup(
