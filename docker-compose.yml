@@ -15,7 +15,9 @@ services:
      - database-nosql
     ports:
       - 3333:3333
-
+    volumes:
+      - ./:/api-letmeask
+      
   database-sql:
     image: mariadb
     container_name: maria-db-api-despesas
