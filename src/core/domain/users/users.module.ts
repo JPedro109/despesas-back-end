@@ -4,7 +4,7 @@ import {
   DatabaseModule,
   MailModule,
   GenerationModule,
-  JsonWebTokenModule,
+  AuthenticationModule,
 } from '@/infra';
 import {
   AbstractCreateUserUseCase,
@@ -35,7 +35,7 @@ import {
     DatabaseModule,
     MailModule,
     GenerationModule,
-    JsonWebTokenModule,
+    AuthenticationModule,
   ],
   providers: [
     {

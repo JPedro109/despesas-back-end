@@ -7,10 +7,10 @@ module.exports = {
   },
   collectCoverageFrom: [
     '!<rootDir>/src/app.module.ts',
-    '!<rootDir>/src/main',
-    '!<rootDir>/src/custom/**',
+    '!<rootDir>/src/shared/**',
     '!<rootDir>/src/core/domain/**/*.module.ts',
     '!<rootDir>/src/infra/**/*.module.ts',
+    '!<rootDir>/src/infra/database/prisma/database.service.ts',
   ],
   transform: {
     '.+\\.ts$': 'ts-jest',

@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import {
   AbstractCryptographyService,
-  AbstractJsonWebTokenService,
+  AbstractAuthenticationService,
 } from '@/core/ports';
 import { UnauthorizedError } from '@/core/errors';
 import { AbstractUserRepository } from '../repositories';
@@ -13,7 +13,7 @@ export class UserLoginUseCase implements AbstractUserLoginUseCase {
   constructor(
     private repository: AbstractUserRepository,
     private cryptography: AbstractCryptographyService,
-    private jsonWebToken: AbstractJsonWebTokenService,
+    private jsonWebToken: AbstractAuthenticationService,
   ) {}
 
   async execute({
@@ -35,6 +35,9 @@ export class UserLoginUseCase implements AbstractUserLoginUseCase {
     if (!user.verifiedEmail)
       return new UnauthorizedError('Email não está verificado');
 
-    return await this.jsonWebToken.createToken({ sub: user.id, email }, 86400);
+    return await this.jsonWebToken.createJsonWebToken(
+      { sub: user.id, email },
+      86400,
+    );
   }
 }

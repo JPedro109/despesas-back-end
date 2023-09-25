@@ -56,7 +56,7 @@ export class SendUserEmailUpdateLinkUseCase
     await this.mailService.sendMail(
       emailOrError.value,
       'Atualização de E-mail',
-      'update-email.body',
+      'update-email-body',
       {
         appUrl: APP_URL,
         email: emailOrError.value,

@@ -1,4 +1,4 @@
-import { InvalidExpenseNameError } from './errors';
+import { InvalidExpenseNameError } from './error';
 
 export class ExpenseName {
   private readonly _expenseName: string;

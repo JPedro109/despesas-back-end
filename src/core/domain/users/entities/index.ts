@@ -1,7 +1,7 @@
 export * from './user';
 
 export * from './email/value-object';
-export * from './email/errors';
+export * from './email/error';
 
 export * from './password/value-object';
-export * from './password/errors';
+export * from './password/error';

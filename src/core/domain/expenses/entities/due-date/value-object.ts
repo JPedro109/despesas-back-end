@@ -1,4 +1,4 @@
-import { InvalidDueDateError } from './errors';
+import { InvalidDueDateError } from './error';
 
 export class DueDate {
   private readonly _dueDate: Date;

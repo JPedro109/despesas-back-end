@@ -1,19 +1,8 @@
 import { Module } from '@nestjs/common';
-import { AbstractQueue } from '@/core/ports';
-import { QueueService } from './queue.service';
+import { emailServiceQueue } from './queues';
 
 @Module({
-  providers: [
-    {
-      provide: AbstractQueue,
-      useClass: QueueService,
-    },
-  ],
-  exports: [
-    {
-      provide: AbstractQueue,
-      useClass: QueueService,
-    },
-  ],
+  imports: [emailServiceQueue],
+  exports: [emailServiceQueue],
 })
 export class QueueModule {}
