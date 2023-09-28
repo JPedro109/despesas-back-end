@@ -1,6 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { APP_URL } from '@/shared';
-import { AbstractGenerationService, AbstractMailService } from '@/core/ports';
+import {
+  AbstractGenerationService,
+  AbstractMailService,
+  EmailBody,
+} from '@/core/ports';
 import { NotFoundError } from '@/core/errors';
 import {
   AbstractUserRepository,
@@ -44,7 +48,7 @@ export class SendUserPasswordRecoveryLinkUseCase
     await this.mailService.sendMail(
       email,
       'Recuperação de Senha',
-      'recover-password-body',
+      EmailBody.RecoverPasswordBody,
       {
         appUrl: APP_URL,
         email: email,

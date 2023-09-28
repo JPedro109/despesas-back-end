@@ -17,6 +17,7 @@ export class MailService implements AbstractMailService {
       subject,
       template: html,
       context,
+      service: 'DESPESAS',
     };
 
     this.client.emit('send_email', email);

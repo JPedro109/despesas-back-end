@@ -1,7 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { APP_URL } from '@/shared';
 import { Email } from '@/core/domain/users/entities';
-import { AbstractGenerationService, AbstractMailService } from '@/core/ports';
+import {
+  AbstractGenerationService,
+  AbstractMailService,
+  EmailBody,
+} from '@/core/ports';
 import { InvalidParamError, NotFoundError } from '@/core/errors';
 import {
   AbstractUserRepository,
@@ -56,7 +60,7 @@ export class SendUserEmailUpdateLinkUseCase
     await this.mailService.sendMail(
       emailOrError.value,
       'Atualização de E-mail',
-      'update-email-body',
+      EmailBody.UpdateEmailBody,
       {
         appUrl: APP_URL,
         email: emailOrError.value,

@@ -6,6 +6,7 @@ import {
   AbstractGenerationService,
   AbstractMailService,
   AbstractUnitOfWork,
+  EmailBody,
 } from '@/core/ports';
 import { InvalidParamError } from '@/core/errors';
 import { AbstractCreateUserUseCase } from '../abstracts';
@@ -59,7 +60,7 @@ export class CreateUserUseCase implements AbstractCreateUserUseCase {
       await this.mailService.sendMail(
         userOrError.email.value,
         'Criação de Usuário',
-        'create-user-body',
+        EmailBody.CreateUserBody,
         {
           appUrl: APP_URL,
           email: userOrError.email.value,
