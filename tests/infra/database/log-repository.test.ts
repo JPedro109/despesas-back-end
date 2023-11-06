@@ -26,15 +26,15 @@ describe('Infra - LogRepository', () => {
   });
 
   test('Should create logs and delete all | createLog', async () => {
+    const level = 'INFO';
+    const title = 'title';
     const message = 'message';
-    const stack = 'stack';
-    const name = 'name';
 
-    const log = await sut.createLog(message, stack, name);
+    const log = await sut.createLog(level, title, message);
 
+    expect(log.level).toBe(level);
+    expect(log.title).toBe(title);
     expect(log.message).toBe(message);
-    expect(log.stack).toBe(stack);
-    expect(log.name).toBe(name);
 
     await sut.deleteAllLogs();
   });

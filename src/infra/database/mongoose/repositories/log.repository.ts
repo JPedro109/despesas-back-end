@@ -21,18 +21,26 @@ export class LogRepository implements AbstractLogRepository {
         never
       >,
   ) {
-    return new LogModel(log._id.toString(), log.message, log.stack, log.name);
+    return new LogModel(
+      log._id.toString(),
+      log.level,
+      log.title,
+      log.message,
+      log.trace,
+    );
   }
 
   async createLog(
+    level: string,
+    title: string,
     message: string,
-    stack: string,
-    name: string,
+    trace?: string,
   ): Promise<LogModel> {
     const log = await this.model.create({
+      level,
+      title,
       message,
-      stack,
-      name,
+      trace,
     });
 
     return this.toMapperLogModel(log);
