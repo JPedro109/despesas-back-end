@@ -14,6 +14,8 @@ env:
   QUEUE_HOST: "amqp://admin:admin@localhost:5672"
   QUEUE_NAME: "queue"
   NODE_OPTIONS: --max-old-space-size=8192
+  LOG_BASH: true
+  LOG_NOSQL: true
   
 jobs:
   build:
