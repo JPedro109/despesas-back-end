@@ -8,3 +8,5 @@ export const PORT = process.env.PORT;
 export const ENVIRONMENT = process.env.ENVIRONMENT;
 export const QUEUE_HOST = process.env.QUEUE_HOST;
 export const QUEUE_NAME = process.env.QUEUE_NAME;
+export const LOG_BASH = process.env.LOG_BASH;
+export const LOG_NOSQL = process.env.LOG_NOSQL;
