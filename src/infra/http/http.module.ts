@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloDriver } from '@nestjs/apollo';
 import { GraphQLFormattedError } from 'graphql';
-import { AuthenticationModule } from '@/infra';
+import { AuthenticationModule, LogModule } from '@/infra';
 import { UsersModule } from '@/core/domain/users/users.module';
 import { ExpensesModule } from '@/core/domain/expenses/expense.module';
 import {
@@ -38,6 +38,7 @@ import {
 
 @Module({
   imports: [
+    LogModule,
     UsersModule,
     ExpensesModule,
     AuthenticationModule,

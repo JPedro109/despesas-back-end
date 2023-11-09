@@ -2,6 +2,7 @@ import { NestFactory } from '@nestjs/core';
 import { INestApplication } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { ENVIRONMENT, PORT, APP_URL, ValidationPipeCustom } from '@/shared';
+import { AbstractLogService } from '@/core/ports';
 import { AppModule } from '@/app.module';
 
 export class Bootstrap {
@@ -41,12 +42,19 @@ export class Bootstrap {
     }
   }
 
+  private static addLog(app: INestApplication) {
+    const log = app.get<AbstractLogService>(AbstractLogService);
+
+    app.useLogger(log);
+  }
+
   static async execute() {
     const app = await NestFactory.create(AppModule);
 
     this.addCors(app);
     this.addPipes(app);
     this.addDocumentation(app);
+    this.addLog(app);
 
     await app.listen(PORT || 3000);
   }
