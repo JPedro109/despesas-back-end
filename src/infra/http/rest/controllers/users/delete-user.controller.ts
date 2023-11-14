@@ -2,7 +2,6 @@ import {
   Body,
   Controller,
   Delete,
-  BadRequestException,
   HttpCode,
   UseGuards,
   Req,
@@ -16,18 +15,25 @@ import {
   getSchemaPath,
 } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
+import { AbstractLogService } from '@/core/ports';
 import { AbstractDeleteUserUseCase } from '@/core/domain/users/abstracts';
 import {
   DeleteUserBodyDTO,
   ErrorDTO,
   InternalServerErrorDTO,
 } from '@/infra/http/rest/dtos';
+import { AbstractRest } from '@/infra/http/rest/abstract';
 
 @ApiTags('Users')
 @ApiBearerAuth()
 @Controller('api/users')
-export class DeleteUserController {
-  constructor(private readonly useCase: AbstractDeleteUserUseCase) {}
+export class DeleteUserController extends AbstractRest {
+  constructor(
+    protected readonly useCase: AbstractDeleteUserUseCase,
+    protected readonly logService: AbstractLogService,
+  ) {
+    super(useCase, logService);
+  }
 
   @ApiOperation({ summary: 'Deletar usuário.' })
   @ApiResponse({
@@ -59,18 +65,14 @@ export class DeleteUserController {
 
     const userId = req.user;
 
-    const response = await this.useCase.execute({
-      id: userId,
-      password,
-      passwordConfirm,
-    });
-
-    if (response instanceof Error)
-      throw new BadRequestException(response.message, {
-        cause: response,
-        description: response.name,
-      });
-
-    return Object(response);
+    return await this.handler(
+      {
+        id: userId,
+        password,
+        passwordConfirm,
+      },
+      req.path,
+      req.method,
+    );
   }
 }

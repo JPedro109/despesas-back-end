@@ -1,10 +1,4 @@
-import {
-  Body,
-  Controller,
-  Post,
-  BadRequestException,
-  HttpCode,
-} from '@nestjs/common';
+import { Body, Controller, Post, HttpCode, Req } from '@nestjs/common';
 import {
   ApiExtraModels,
   ApiOperation,
@@ -12,17 +6,24 @@ import {
   ApiTags,
   getSchemaPath,
 } from '@nestjs/swagger';
+import { AbstractLogService } from '@/core/ports';
 import { AbstractCreateUserUseCase } from '@/core/domain/users/abstracts';
 import {
   CreateUserBodyDTO,
   ErrorDTO,
   InternalServerErrorDTO,
 } from '@/infra/http/rest/dtos';
+import { AbstractRest } from '@/infra/http/rest/abstract';
 
 @ApiTags('Users')
 @Controller('api/users')
-export class CreateUserController {
-  constructor(private readonly useCase: AbstractCreateUserUseCase) {}
+export class CreateUserController extends AbstractRest {
+  constructor(
+    protected readonly useCase: AbstractCreateUserUseCase,
+    protected readonly logService: AbstractLogService,
+  ) {
+    super(useCase, logService);
+  }
 
   @ApiOperation({ summary: 'Criar usuário' })
   @ApiResponse({
@@ -48,21 +49,17 @@ export class CreateUserController {
   })
   @HttpCode(201)
   @Post()
-  async handle(@Body() body: CreateUserBodyDTO) {
+  async handle(@Req() req, @Body() body: CreateUserBodyDTO) {
     const { email, password, passwordConfirm } = body;
 
-    const response = await this.useCase.execute({
-      email,
-      password,
-      passwordConfirm,
-    });
-
-    if (response instanceof Error)
-      throw new BadRequestException(response.message, {
-        cause: response,
-        description: response.name,
-      });
-
-    return Object(response);
+    return await this.handler(
+      {
+        email,
+        password,
+        passwordConfirm,
+      },
+      req.path,
+      req.method,
+    );
   }
 }

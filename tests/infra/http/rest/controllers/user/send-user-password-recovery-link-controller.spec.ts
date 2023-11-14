@@ -1,13 +1,15 @@
 import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { SendUserPasswordRecoveryLinkController } from '@/infra/http/rest/controllers';
 import { InvalidParamError, NotFoundError } from '@/core/errors';
-import { SendUserPasswordRecoveryLinkStub } from './stubs';
+import { LogStub, SendUserPasswordRecoveryLinkStub } from './stubs';
 
 const makeSut = () => {
   const sendUserPasswordRecoveryLinkStub =
     new SendUserPasswordRecoveryLinkStub();
+  const logStub = new LogStub();
   const sut = new SendUserPasswordRecoveryLinkController(
     sendUserPasswordRecoveryLinkStub,
+    logStub,
   );
 
   return {
@@ -31,7 +33,7 @@ describe('Infra (Controller) - SendUserPasswordRecoveryLinkController', () => {
       .mockResolvedValueOnce(Promise.resolve(new InvalidParamError('error')));
 
     await sut
-      .handle(body)
+      .handle({}, body)
       .catch((e) => expect(e).toBeInstanceOf(BadRequestException));
   });
 
@@ -43,7 +45,7 @@ describe('Infra (Controller) - SendUserPasswordRecoveryLinkController', () => {
       .mockResolvedValueOnce(Promise.resolve(new NotFoundError('error')));
 
     await sut
-      .handle(body)
+      .handle({}, body)
       .catch((e) => expect(e).toBeInstanceOf(NotFoundException));
   });
 
@@ -51,7 +53,7 @@ describe('Infra (Controller) - SendUserPasswordRecoveryLinkController', () => {
     const body = makeBody('email@test.com');
     const { sut } = makeSut();
 
-    const result = await sut.handle(body);
+    const result = await sut.handle({}, body);
 
     expect(result).toEqual(Object(body.email));
   });

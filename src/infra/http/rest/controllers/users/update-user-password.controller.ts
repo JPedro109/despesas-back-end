@@ -1,12 +1,10 @@
 import {
   Controller,
-  BadRequestException,
   HttpCode,
   Patch,
   UseGuards,
   Req,
   Body,
-  NotFoundException,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
@@ -16,20 +14,26 @@ import {
   ApiTags,
   getSchemaPath,
 } from '@nestjs/swagger';
-import { AbstractUpdateUserPasswordUseCase } from '@/core/domain/users/abstracts';
 import { AuthGuard } from '@nestjs/passport';
-import { NotFoundError } from '@/core/errors';
+import { AbstractLogService } from '@/core/ports';
+import { AbstractUpdateUserPasswordUseCase } from '@/core/domain/users/abstracts';
 import {
   ErrorDTO,
   InternalServerErrorDTO,
   UpdateUserPasswordBodyDTO,
 } from '@/infra/http/rest/dtos';
+import { AbstractRest } from '@/infra/http/rest/abstract';
 
 @ApiTags('Users')
 @ApiBearerAuth()
 @Controller('api/users')
-export class UpdateUserPasswordController {
-  constructor(private readonly useCase: AbstractUpdateUserPasswordUseCase) {}
+export class UpdateUserPasswordController extends AbstractRest {
+  constructor(
+    protected readonly useCase: AbstractUpdateUserPasswordUseCase,
+    protected readonly logService: AbstractLogService,
+  ) {
+    super(useCase, logService);
+  }
 
   @ApiOperation({ summary: 'Atualizar senha' })
   @ApiResponse({
@@ -72,25 +76,15 @@ export class UpdateUserPasswordController {
 
     const userId = req.user;
 
-    const response = await this.useCase.execute({
-      id: userId,
-      password,
-      newPassword,
-      newPasswordConfirm,
-    });
-
-    if (response instanceof NotFoundError)
-      throw new NotFoundException(response.message, {
-        cause: response,
-        description: response.name,
-      });
-
-    if (response instanceof Error)
-      throw new BadRequestException(response.message, {
-        cause: response,
-        description: response.name,
-      });
-
-    return Object(response);
+    return await this.handler(
+      {
+        id: userId,
+        password,
+        newPassword,
+        newPasswordConfirm,
+      },
+      req.path,
+      req.method,
+    );
   }
 }

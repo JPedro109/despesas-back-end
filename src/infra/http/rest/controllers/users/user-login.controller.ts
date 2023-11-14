@@ -1,10 +1,4 @@
-import {
-  Body,
-  Controller,
-  Post,
-  UnauthorizedException,
-  HttpCode,
-} from '@nestjs/common';
+import { Body, Controller, Post, HttpCode, Req } from '@nestjs/common';
 import {
   ApiExtraModels,
   ApiOperation,
@@ -12,18 +6,24 @@ import {
   ApiTags,
   getSchemaPath,
 } from '@nestjs/swagger';
-import { UnauthorizedError } from '@/core/errors';
+import { AbstractLogService } from '@/core/ports';
 import { AbstractUserLoginUseCase } from '@/core/domain/users/abstracts';
 import {
   ErrorDTO,
   InternalServerErrorDTO,
   UserLoginBodyDTO,
 } from '@/infra/http/rest/dtos';
+import { AbstractRest } from '@/infra/http/rest/abstract';
 
 @ApiTags('Users')
 @Controller('api/users')
-export class UserLoginController {
-  constructor(private readonly useCase: AbstractUserLoginUseCase) {}
+export class UserLoginController extends AbstractRest {
+  constructor(
+    protected readonly useCase: AbstractUserLoginUseCase,
+    protected readonly logService: AbstractLogService,
+  ) {
+    super(useCase, logService);
+  }
 
   @ApiOperation({ summary: 'Login do usuário' })
   @ApiResponse({
@@ -56,20 +56,16 @@ export class UserLoginController {
   })
   @HttpCode(200)
   @Post('login')
-  async handle(@Body() body: UserLoginBodyDTO) {
+  async handle(@Req() req, @Body() body: UserLoginBodyDTO) {
     const { email, password } = body;
 
-    const response = await this.useCase.execute({
-      email,
-      password,
-    });
-
-    if (response instanceof UnauthorizedError)
-      throw new UnauthorizedException(response.message, {
-        cause: response,
-        description: response.name,
-      });
-
-    return Object(response);
+    return await this.handler(
+      {
+        email,
+        password,
+      },
+      req.path,
+      req.method,
+    );
   }
 }

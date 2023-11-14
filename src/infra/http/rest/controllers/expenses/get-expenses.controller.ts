@@ -8,14 +8,21 @@ import {
   getSchemaPath,
 } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
+import { AbstractLogService } from '@/core/ports';
+import { AbstractRest } from '@/infra/http/rest/abstract';
 import { AbstractGetExpensesUseCase } from '@/core/domain/expenses/abstracts';
 import { ErrorDTO, InternalServerErrorDTO } from '@/infra/http/rest/dtos';
 
 @ApiTags('Expenses')
 @ApiBearerAuth()
 @Controller('api/expenses')
-export class GetExpensesController {
-  constructor(private readonly useCase: AbstractGetExpensesUseCase) {}
+export class GetExpensesController extends AbstractRest {
+  constructor(
+    protected readonly useCase: AbstractGetExpensesUseCase,
+    protected readonly logService: AbstractLogService,
+  ) {
+    super(useCase, logService);
+  }
 
   @ApiOperation({ summary: 'Retornar despesas' })
   @ApiResponse({
@@ -59,10 +66,12 @@ export class GetExpensesController {
   async handle(@Req() req) {
     const userId = req.user;
 
-    const response = await this.useCase.execute({
-      userId,
-    });
-
-    return response;
+    return await this.handler(
+      {
+        userId,
+      },
+      req.path,
+      req.method,
+    );
   }
 }

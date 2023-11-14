@@ -3,10 +3,9 @@ import {
   Body,
   Controller,
   Put,
-  BadRequestException,
-  NotFoundException,
   HttpCode,
   UseGuards,
+  Req,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
@@ -17,8 +16,9 @@ import {
   getSchemaPath,
 } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
+import { AbstractLogService } from '@/core/ports';
+import { AbstractRest } from '@/infra/http/rest/abstract';
 import { AbstractUpdateExpenseUseCase } from '@/core/domain/expenses/abstracts';
-import { NotFoundError } from '@/core/errors';
 import {
   ErrorDTO,
   InternalServerErrorDTO,
@@ -29,8 +29,13 @@ import {
 @ApiTags('Expenses')
 @ApiBearerAuth()
 @Controller('api/expenses')
-export class UpdateExpenseController {
-  constructor(private readonly useCase: AbstractUpdateExpenseUseCase) {}
+export class UpdateExpenseController extends AbstractRest {
+  constructor(
+    protected readonly useCase: AbstractUpdateExpenseUseCase,
+    protected readonly logService: AbstractLogService,
+  ) {
+    super(useCase, logService);
+  }
 
   @ApiOperation({ summary: 'Atualizar despesa' })
   @ApiResponse({
@@ -72,6 +77,7 @@ export class UpdateExpenseController {
   @HttpCode(200)
   @Put(':id')
   async handle(
+    @Req() req,
     @Param() param: UpdateExpenseParamsDTO,
     @Body() body: UpdateExpenseUserBodyDTO,
   ) {
@@ -79,25 +85,15 @@ export class UpdateExpenseController {
 
     const { expenseName, expenseValue, dueDate } = body;
 
-    const response = await this.useCase.execute({
-      id,
-      expenseName,
-      expenseValue,
-      dueDate,
-    });
-
-    if (response instanceof NotFoundError)
-      throw new NotFoundException(response.message, {
-        cause: response,
-        description: response.name,
-      });
-
-    if (response instanceof Error)
-      throw new BadRequestException(response.message, {
-        cause: response,
-        description: response.name,
-      });
-
-    return response;
+    return await this.handler(
+      {
+        id,
+        expenseName,
+        expenseValue,
+        dueDate,
+      },
+      req.path,
+      req.method,
+    );
   }
 }

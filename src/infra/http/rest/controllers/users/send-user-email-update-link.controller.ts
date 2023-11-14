@@ -1,7 +1,6 @@
 import {
   Body,
   Controller,
-  BadRequestException,
   HttpCode,
   Patch,
   UseGuards,
@@ -16,20 +15,25 @@ import {
   getSchemaPath,
 } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
+import { AbstractLogService } from '@/core/ports';
 import { AbstractSendUserEmailUpdateLinkUseCase } from '@/core/domain/users/abstracts';
 import {
   ErrorDTO,
   InternalServerErrorDTO,
   SendUserEmailUpdateLinkBodyDTO,
 } from '@/infra/http/rest/dtos';
+import { AbstractRest } from '@/infra/http/rest/abstract';
 
 @ApiTags('Users')
 @ApiBearerAuth()
 @Controller('api/users')
-export class SendUserEmailUpdateLinkController {
+export class SendUserEmailUpdateLinkController extends AbstractRest {
   constructor(
-    private readonly useCase: AbstractSendUserEmailUpdateLinkUseCase,
-  ) {}
+    protected readonly useCase: AbstractSendUserEmailUpdateLinkUseCase,
+    protected readonly logService: AbstractLogService,
+  ) {
+    super(useCase, logService);
+  }
 
   @ApiOperation({ summary: 'Enviar link de atualização de email.' })
   @ApiResponse({
@@ -72,17 +76,13 @@ export class SendUserEmailUpdateLinkController {
 
     const userId = req.user;
 
-    const response = await this.useCase.execute({
-      id: userId,
-      email,
-    });
-
-    if (response instanceof Error)
-      throw new BadRequestException(response.message, {
-        cause: response,
-        description: response.name,
-      });
-
-    return Object(response);
+    return await this.handler(
+      {
+        id: userId,
+        email,
+      },
+      req.path,
+      req.method,
+    );
   }
 }

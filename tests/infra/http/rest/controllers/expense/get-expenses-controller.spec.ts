@@ -1,10 +1,11 @@
 import { GetExpensesController } from '@/infra/http/rest/controllers';
 import { testExpenseModel } from './datas';
-import { GetExpensesStub } from './stubs';
+import { GetExpensesStub, LogStub } from './stubs';
 
 const makeSut = () => {
   const getExpensesStub = new GetExpensesStub();
-  const sut = new GetExpensesController(getExpensesStub);
+  const logStub = new LogStub();
+  const sut = new GetExpensesController(getExpensesStub, logStub);
 
   return {
     sut,

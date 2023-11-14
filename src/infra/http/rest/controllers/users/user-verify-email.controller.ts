@@ -1,12 +1,4 @@
-import {
-  Query,
-  Controller,
-  Patch,
-  BadRequestException,
-  NotFoundException,
-  UnauthorizedException,
-  HttpCode,
-} from '@nestjs/common';
+import { Query, Controller, Patch, HttpCode, Req } from '@nestjs/common';
 import {
   ApiExtraModels,
   ApiOperation,
@@ -14,18 +6,24 @@ import {
   ApiTags,
   getSchemaPath,
 } from '@nestjs/swagger';
-import { NotFoundError, UnauthorizedError } from '@/core/errors';
+import { AbstractLogService } from '@/core/ports';
 import { AbstractUserVerifyEmailUseCase } from '@/core/domain/users/abstracts';
 import {
   ErrorDTO,
   InternalServerErrorDTO,
   UserVerifyEmailQueryDTO,
 } from '@/infra/http/rest/dtos';
+import { AbstractRest } from '@/infra/http/rest/abstract';
 
 @ApiTags('Users')
 @Controller('api/users')
-export class UserVerifyEmailController {
-  constructor(private readonly useCase: AbstractUserVerifyEmailUseCase) {}
+export class UserVerifyEmailController extends AbstractRest {
+  constructor(
+    protected readonly useCase: AbstractUserVerifyEmailUseCase,
+    protected readonly logService: AbstractLogService,
+  ) {
+    super(useCase, logService);
+  }
 
   @ApiOperation({ summary: 'Verificar email' })
   @ApiResponse({
@@ -65,32 +63,16 @@ export class UserVerifyEmailController {
   })
   @HttpCode(200)
   @Patch('verify-email')
-  async handle(@Query() query: UserVerifyEmailQueryDTO) {
+  async handle(@Req() req, @Query() query: UserVerifyEmailQueryDTO) {
     const { email, code } = query;
 
-    const response = await this.useCase.execute({
-      email,
-      code,
-    });
-
-    if (response instanceof NotFoundError)
-      throw new NotFoundException(response.message, {
-        cause: response,
-        description: response.name,
-      });
-
-    if (response instanceof UnauthorizedError)
-      throw new UnauthorizedException(response.message, {
-        cause: response,
-        description: response.name,
-      });
-
-    if (response instanceof Error)
-      throw new BadRequestException(response.message, {
-        cause: response,
-        description: response.name,
-      });
-
-    return Object(response);
+    return await this.handler(
+      {
+        email,
+        code,
+      },
+      req.path,
+      req.method,
+    );
   }
 }

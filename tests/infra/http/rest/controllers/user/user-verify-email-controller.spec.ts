@@ -4,7 +4,7 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { UserVerifyEmailController } from '@/infra/http/rest/controllers';
-import { UserVerifyEmailStub } from './stubs';
+import { LogStub, UserVerifyEmailStub } from './stubs';
 import {
   InvalidParamError,
   NotFoundError,
@@ -13,7 +13,8 @@ import {
 
 const makeSut = () => {
   const userVerifyEmailStub = new UserVerifyEmailStub();
-  const sut = new UserVerifyEmailController(userVerifyEmailStub);
+  const logStub = new LogStub();
+  const sut = new UserVerifyEmailController(userVerifyEmailStub, logStub);
 
   return {
     sut,
@@ -37,7 +38,7 @@ describe('Infra (Controller) - UserVerifyEmailController', () => {
       .mockResolvedValueOnce(new NotFoundError('error'));
 
     await sut
-      .handle(body)
+      .handle({}, body)
       .catch((e) => expect(e).toBeInstanceOf(NotFoundException));
   });
 
@@ -49,7 +50,7 @@ describe('Infra (Controller) - UserVerifyEmailController', () => {
       .mockResolvedValueOnce(new UnauthorizedError('error'));
 
     await sut
-      .handle(body)
+      .handle({}, body)
       .catch((e) => expect(e).toBeInstanceOf(UnauthorizedException));
   });
 
@@ -61,7 +62,7 @@ describe('Infra (Controller) - UserVerifyEmailController', () => {
       .mockResolvedValueOnce(new InvalidParamError('error'));
 
     await sut
-      .handle(body)
+      .handle({}, body)
       .catch((e) => expect(e).toBeInstanceOf(BadRequestException));
   });
 
@@ -69,7 +70,7 @@ describe('Infra (Controller) - UserVerifyEmailController', () => {
     const body = makeBody('email@test.com', 'code');
     const { sut } = makeSut();
 
-    const result = await sut.handle(body);
+    const result = await sut.handle({}, body);
 
     expect(result).toEqual(Object(body.email));
   });

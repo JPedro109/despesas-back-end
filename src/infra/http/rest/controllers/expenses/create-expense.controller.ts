@@ -2,7 +2,6 @@ import {
   Body,
   Controller,
   Post,
-  BadRequestException,
   HttpCode,
   UseGuards,
   Req,
@@ -16,6 +15,8 @@ import {
   getSchemaPath,
 } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
+import { AbstractLogService } from '@/core/ports';
+import { AbstractRest } from '@/infra/http/rest/abstract';
 import { AbstractCreateExpenseUseCase } from '@/core/domain/expenses/abstracts';
 import {
   CreateExpenseUserBodyDTO,
@@ -26,8 +27,13 @@ import {
 @ApiTags('Expenses')
 @ApiBearerAuth()
 @Controller('api/expenses')
-export class CreateExpenseController {
-  constructor(private readonly useCase: AbstractCreateExpenseUseCase) {}
+export class CreateExpenseController extends AbstractRest {
+  constructor(
+    protected readonly useCase: AbstractCreateExpenseUseCase,
+    protected readonly logService: AbstractLogService,
+  ) {
+    super(useCase, logService);
+  }
 
   @ApiOperation({ summary: 'Criar despesa' })
   @ApiResponse({
@@ -66,19 +72,15 @@ export class CreateExpenseController {
 
     const userId = req.user;
 
-    const response = await this.useCase.execute({
-      expenseName,
-      expenseValue,
-      dueDate,
-      userId,
-    });
-
-    if (response instanceof Error)
-      throw new BadRequestException(response.message, {
-        cause: response,
-        description: response.name,
-      });
-
-    return response;
+    return await this.handler(
+      {
+        expenseName,
+        expenseValue,
+        dueDate,
+        userId,
+      },
+      req.path,
+      req.method,
+    );
   }
 }

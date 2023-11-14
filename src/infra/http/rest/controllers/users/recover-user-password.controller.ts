@@ -1,12 +1,4 @@
-import {
-  Body,
-  Controller,
-  BadRequestException,
-  NotFoundException,
-  HttpCode,
-  Query,
-  Patch,
-} from '@nestjs/common';
+import { Body, Controller, HttpCode, Query, Patch, Req } from '@nestjs/common';
 import {
   ApiExtraModels,
   ApiOperation,
@@ -14,7 +6,7 @@ import {
   ApiTags,
   getSchemaPath,
 } from '@nestjs/swagger';
-import { NotFoundError } from '@/core/errors';
+import { AbstractLogService } from '@/core/ports';
 import { AbstractRecoverUserPasswordUseCase } from '@/core/domain/users/abstracts';
 import {
   RecoverUserPasswordQueryDTO,
@@ -22,11 +14,17 @@ import {
   ErrorDTO,
   InternalServerErrorDTO,
 } from '@/infra/http/rest/dtos';
+import { AbstractRest } from '@/infra/http/rest/abstract';
 
 @ApiTags('Users')
 @Controller('api/users')
-export class RecoverUserPasswordController {
-  constructor(private readonly useCase: AbstractRecoverUserPasswordUseCase) {}
+export class RecoverUserPasswordController extends AbstractRest {
+  constructor(
+    protected readonly useCase: AbstractRecoverUserPasswordUseCase,
+    protected readonly logService: AbstractLogService,
+  ) {
+    super(useCase, logService);
+  }
 
   @ApiOperation({ summary: 'Recuperar senha do usuário.' })
   @ApiResponse({
@@ -60,6 +58,7 @@ export class RecoverUserPasswordController {
   @HttpCode(200)
   @Patch('password-recover')
   async handle(
+    @Req() req,
     @Query()
     query: RecoverUserPasswordQueryDTO,
     @Body()
@@ -68,26 +67,15 @@ export class RecoverUserPasswordController {
     const { password, passwordConfirm } = body;
     const { email, code } = query;
 
-    const response = await this.useCase.execute({
-      email,
-      code,
-      password,
-      passwordConfirm,
-    });
-
-    if (response instanceof NotFoundError)
-      throw new NotFoundException(response.message, {
-        cause: response,
-        description: response.name,
-      });
-
-    if (response instanceof Error) {
-      throw new BadRequestException(response.message, {
-        cause: response,
-        description: response.name,
-      });
-    }
-
-    return Object(response);
+    return await this.handler(
+      {
+        email,
+        code,
+        password,
+        passwordConfirm,
+      },
+      req.path,
+      req.method,
+    );
   }
 }
