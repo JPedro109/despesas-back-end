@@ -1,10 +1,11 @@
 import { GraphQLError } from 'graphql';
 import { UpdateUserPasswordResolver } from '@/infra/http/graphql/resolvers';
-import { UpdateUserPasswordStub } from './stubs';
+import { LogStub, UpdateUserPasswordStub } from './stubs';
 
 const makeSut = () => {
   const updateUserPasswordStub = new UpdateUserPasswordStub();
-  const sut = new UpdateUserPasswordResolver(updateUserPasswordStub);
+  const logStub = new LogStub();
+  const sut = new UpdateUserPasswordResolver(updateUserPasswordStub, logStub);
 
   return {
     sut,
@@ -56,7 +57,7 @@ describe('Infra (Resolver) - UpdateUserPasswordResolver', () => {
     const { sut } = makeSut();
 
     const result = await sut.handle(
-      { req: { user: body.id } },
+      { req: { user: body.id, path: '/', method: 'method' } },
       {
         password: body.password,
         newPassword: body.newPassword,

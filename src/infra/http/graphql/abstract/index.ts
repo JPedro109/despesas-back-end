@@ -59,6 +59,6 @@ export abstract class AbstractGraphQL {
       });
     }
 
-    return response;
+    return Object(response);
   }
 }

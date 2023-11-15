@@ -1,14 +1,20 @@
-import { GraphQLError } from 'graphql';
 import { Resolver, Args, Mutation, Context } from '@nestjs/graphql';
 import { UseGuards } from '@nestjs/common';
+import { AbstractLogService } from '@/core/ports';
 import { AbstractCreateExpenseUseCase } from '@/core/domain/expenses/abstracts';
 import { CreateExpenseInput } from '@/infra/http/graphql/inputs';
 import { GqlAuthGuard } from '@/infra/authentication/guards';
 import { ExpenseType } from '@/infra/http/graphql/types';
+import { AbstractGraphQL } from '@/infra/http/graphql/abstract';
 
 @Resolver()
-export class CreateExpenseResolver {
-  constructor(private readonly useCase: AbstractCreateExpenseUseCase) {}
+export class CreateExpenseResolver extends AbstractGraphQL {
+  constructor(
+    protected readonly useCase: AbstractCreateExpenseUseCase,
+    protected readonly logService: AbstractLogService,
+  ) {
+    super(useCase, logService);
+  }
 
   @UseGuards(GqlAuthGuard)
   @Mutation(() => ExpenseType, { name: 'createExpense' })
@@ -17,18 +23,10 @@ export class CreateExpenseResolver {
 
     const userId = context.req.user;
 
-    const response = await this.useCase.execute({
-      expenseName,
-      expenseValue,
-      dueDate,
-      userId,
-    });
-
-    if (response instanceof Error)
-      throw new GraphQLError(response.message, {
-        extensions: { code: response.name },
-      });
-
-    return response;
+    return await this.handler(
+      { expenseName, expenseValue, dueDate, userId },
+      context.req.path,
+      context.req.method,
+    );
   }
 }

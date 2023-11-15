@@ -1,11 +1,12 @@
 import { GraphQLError } from 'graphql';
 import { CreateExpenseResolver } from '@/infra/http/graphql/resolvers';
 import { testExpenseModel } from './datas';
-import { CreateExpenseStub } from './stubs';
+import { CreateExpenseStub, LogStub } from './stubs';
 
 const makeSut = () => {
   const createExpenseStub = new CreateExpenseStub();
-  const sut = new CreateExpenseResolver(createExpenseStub);
+  const logStub = new LogStub();
+  const sut = new CreateExpenseResolver(createExpenseStub, logStub);
 
   return {
     sut,
@@ -37,7 +38,7 @@ describe('Infra (Resolver) - CreateExpenseResolver', () => {
 
     await sut
       .handle(
-        { req: { userId: body.userId } },
+        { req: { path: '/', method: 'method' } },
         {
           expenseName: body.expenseName,
           expenseValue: body.expenseValue,

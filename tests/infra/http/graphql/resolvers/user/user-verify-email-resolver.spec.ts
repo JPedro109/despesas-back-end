@@ -1,10 +1,11 @@
 import { GraphQLError } from 'graphql';
 import { UserVerifyEmailResolver } from '@/infra/http/graphql/resolvers';
-import { UserVerifyEmailStub } from './stubs';
+import { LogStub, UserVerifyEmailStub } from './stubs';
 
 const makeSut = () => {
   const userVerifyEmailStub = new UserVerifyEmailStub();
-  const sut = new UserVerifyEmailResolver(userVerifyEmailStub);
+  const logStub = new LogStub();
+  const sut = new UserVerifyEmailResolver(userVerifyEmailStub, logStub);
 
   return {
     sut,
@@ -27,14 +28,19 @@ describe('Infra (Resolver) - UserVerifyEmailResolver', () => {
       .spyOn(userVerifyEmailStub, 'execute')
       .mockResolvedValueOnce(new Error('error'));
 
-    await sut.handle(body).catch((e) => expect(e).toBeInstanceOf(GraphQLError));
+    await sut
+      .handle({ req: { path: '/', method: 'method' } }, body)
+      .catch((e) => expect(e).toBeInstanceOf(GraphQLError));
   });
 
   test('Should verify email user', async () => {
     const body = makeBody('email@test.com', 'code');
     const { sut } = makeSut();
 
-    const result = await sut.handle(body);
+    const result = await sut.handle(
+      { req: { path: '/', method: 'method' } },
+      body,
+    );
 
     expect(result).toEqual(Object(body.email));
   });

@@ -1,10 +1,14 @@
 import { GraphQLError } from 'graphql';
 import { SendUserEmailUpdateLinkResolver } from '@/infra/http/graphql/resolvers';
-import { SendUserEmailUpdateLinkStub } from './stubs';
+import { LogStub, SendUserEmailUpdateLinkStub } from './stubs';
 
 const makeSut = () => {
   const sendUserEmailUpdateLinkStub = new SendUserEmailUpdateLinkStub();
-  const sut = new SendUserEmailUpdateLinkResolver(sendUserEmailUpdateLinkStub);
+  const logStub = new LogStub();
+  const sut = new SendUserEmailUpdateLinkResolver(
+    sendUserEmailUpdateLinkStub,
+    logStub,
+  );
 
   return {
     sut,
@@ -28,7 +32,7 @@ describe('Infra (Resolver) - SendUserEmailUpdateLinkStub', () => {
       .mockReturnValueOnce(Promise.resolve(new Error('error')));
 
     await sut
-      .handle({ req: { user: body.id } }, { email: body.email })
+      .handle({ req: { path: '/', method: 'method' } }, { email: body.email })
       .catch((e) => expect(e).toBeInstanceOf(GraphQLError));
   });
 
@@ -37,7 +41,7 @@ describe('Infra (Resolver) - SendUserEmailUpdateLinkStub', () => {
     const { sut } = makeSut();
 
     const result = await sut.handle(
-      { req: { user: body.id } },
+      { req: { user: body.id, path: '/', method: 'method' } },
       { email: body.email },
     );
 

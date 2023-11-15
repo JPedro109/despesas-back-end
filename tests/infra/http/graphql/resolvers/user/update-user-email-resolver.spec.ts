@@ -1,10 +1,11 @@
 import { GraphQLError } from 'graphql';
 import { UpdateUserEmailResolver } from '@/infra/http/graphql/resolvers';
-import { UpdateUserEmailStub } from './stubs';
+import { LogStub, UpdateUserEmailStub } from './stubs';
 
 const makeSut = () => {
   const updateUserEmailStub = new UpdateUserEmailStub();
-  const sut = new UpdateUserEmailResolver(updateUserEmailStub);
+  const logStub = new LogStub();
+  const sut = new UpdateUserEmailResolver(updateUserEmailStub, logStub);
 
   return {
     sut,
@@ -30,7 +31,7 @@ describe('Infra (Resolver) - UpdateUserEmailResolver', () => {
 
     await sut
       .handle(
-        { req: { user: body.id } },
+        { req: { user: body.id, path: '/', method: 'method' } },
         {
           email: body.email,
           code: body.code,
@@ -44,7 +45,7 @@ describe('Infra (Resolver) - UpdateUserEmailResolver', () => {
     const { sut } = makeSut();
 
     const result = await sut.handle(
-      { req: { user: body.id } },
+      { req: { user: body.id, path: '/', method: 'method' } },
       {
         email: body.email,
         code: body.code,

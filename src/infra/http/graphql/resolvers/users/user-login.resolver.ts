@@ -1,26 +1,26 @@
-import { GraphQLError } from 'graphql';
-import { Resolver, Args, Mutation } from '@nestjs/graphql';
+import { Resolver, Args, Mutation, Context } from '@nestjs/graphql';
+import { AbstractLogService } from '@/core/ports';
 import { AbstractUserLoginUseCase } from '@/core/domain/users/abstracts';
 import { UserLoginInput } from '@/infra/http/graphql/inputs';
+import { AbstractGraphQL } from '@/infra/http/graphql/abstract';
 
 @Resolver()
-export class UserLoginResolver {
-  constructor(private readonly useCase: AbstractUserLoginUseCase) {}
+export class UserLoginResolver extends AbstractGraphQL {
+  constructor(
+    protected readonly useCase: AbstractUserLoginUseCase,
+    protected readonly logService: AbstractLogService,
+  ) {
+    super(useCase, logService);
+  }
 
   @Mutation(() => String, { name: 'userLogin' })
-  async handle(@Args('data') body: UserLoginInput) {
+  async handle(@Context() context, @Args('data') body: UserLoginInput) {
     const { email, password } = body;
 
-    const response = await this.useCase.execute({
-      email,
-      password,
-    });
-
-    if (response instanceof Error)
-      throw new GraphQLError(response.message, {
-        extensions: { code: response.name },
-      });
-
-    return Object(response);
+    return await this.handler(
+      { email, password },
+      context.req.path,
+      context.req.method,
+    );
   }
 }

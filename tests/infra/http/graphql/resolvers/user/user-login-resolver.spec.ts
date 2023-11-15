@@ -1,10 +1,11 @@
 import { GraphQLError } from 'graphql';
 import { UserLoginResolver } from '@/infra/http/graphql/resolvers';
-import { UserLoginStub } from './stubs';
+import { LogStub, UserLoginStub } from './stubs';
 
 const makeSut = () => {
   const userLoginStub = new UserLoginStub();
-  const sut = new UserLoginResolver(userLoginStub);
+  const logStub = new LogStub();
+  const sut = new UserLoginResolver(userLoginStub, logStub);
 
   return {
     sut,
@@ -27,14 +28,19 @@ describe('Infra (Resolver) - UserLoginResolver', () => {
       .spyOn(userLoginStub, 'execute')
       .mockResolvedValueOnce(Promise.resolve(new Error('error')));
 
-    await sut.handle(body).catch((e) => expect(e).toBeInstanceOf(GraphQLError));
+    await sut
+      .handle({ req: { path: '/', method: 'method' } }, body)
+      .catch((e) => expect(e).toBeInstanceOf(GraphQLError));
   });
 
   test('Should login user', async () => {
     const body = makeBody('email@test.com', 'Password1234');
     const { sut } = makeSut();
 
-    const result = await sut.handle(body);
+    const result = await sut.handle(
+      { req: { path: '/', method: 'method' } },
+      body,
+    );
 
     expect(result).toEqual(Object('code'));
   });
