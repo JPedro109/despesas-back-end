@@ -81,6 +81,7 @@ export class CreateExpenseController extends AbstractRest {
       },
       req.path,
       req.method,
+      201,
     );
   }
 }

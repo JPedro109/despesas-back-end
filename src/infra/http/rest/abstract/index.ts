@@ -22,7 +22,12 @@ export abstract class AbstractRest {
     return data;
   }
 
-  async handler(args: unknown, path: string, method: string) {
+  async handler(
+    args: unknown,
+    path: string,
+    method: string,
+    successStatusCode = 200,
+  ) {
     const response = await this.useCase.execute(args);
 
     const log = (statusCode: number) => ({
@@ -63,6 +68,11 @@ export abstract class AbstractRest {
         description: response.name,
       });
     }
+
+    this.logService.log(
+      `${path} - ${method} - ${this.useCase.constructor.name}`,
+      JSON.stringify(log(successStatusCode)),
+    );
 
     return Object(response);
   }

@@ -60,6 +60,7 @@ export class CreateUserController extends AbstractRest {
       },
       req.path,
       req.method,
+      201,
     );
   }
 }
