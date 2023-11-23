@@ -27,6 +27,7 @@ export class CreateExpenseResolver extends AbstractGraphQL {
       { expenseName, expenseValue, dueDate, userId },
       context.req.path,
       context.req.method,
+      201,
     );
   }
 }

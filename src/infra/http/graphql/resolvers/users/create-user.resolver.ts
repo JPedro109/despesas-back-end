@@ -21,6 +21,7 @@ export class CreateUserResolver extends AbstractGraphQL {
       { email, password, passwordConfirm },
       context.req.path,
       context.req.method,
+      201,
     );
   }
 }
