@@ -38,7 +38,7 @@ export class DeleteUserController extends AbstractRest {
   @ApiOperation({ summary: 'Deletar usuário.' })
   @ApiResponse({
     status: 200,
-    description: 'Rota de exclusão de usuário',
+    description: 'Usuário deletado com sucesso',
     type: String,
   })
   @ApiExtraModels(ErrorDTO)
@@ -47,7 +47,7 @@ export class DeleteUserController extends AbstractRest {
     schema: {
       $ref: getSchemaPath(ErrorDTO),
     },
-    description: 'DTO inválido ou erro na regras de negócio',
+    description: 'Erro do usuário',
   })
   @ApiExtraModels(InternalServerErrorDTO)
   @ApiResponse({

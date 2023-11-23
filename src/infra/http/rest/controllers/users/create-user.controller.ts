@@ -28,7 +28,7 @@ export class CreateUserController extends AbstractRest {
   @ApiOperation({ summary: 'Criar usuário' })
   @ApiResponse({
     status: 201,
-    description: 'Rota de criação de usuário',
+    description: 'Usuário criado com sucesso',
     type: String,
   })
   @ApiExtraModels(ErrorDTO)
@@ -37,7 +37,7 @@ export class CreateUserController extends AbstractRest {
     schema: {
       $ref: getSchemaPath(ErrorDTO),
     },
-    description: 'DTO inválido ou erro na regras de negócio',
+    description: 'Erro do usuário',
   })
   @ApiExtraModels(InternalServerErrorDTO)
   @ApiResponse({

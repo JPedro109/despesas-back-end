@@ -38,7 +38,8 @@ export class SendUserEmailUpdateLinkController extends AbstractRest {
   @ApiOperation({ summary: 'Enviar link de atualização de email.' })
   @ApiResponse({
     status: 200,
-    description: 'Rota de envio do link de atualização de email',
+    description:
+      'Email de confirmação de atualização de email enviado com sucesso',
     type: String,
   })
   @ApiExtraModels(ErrorDTO)
@@ -47,7 +48,7 @@ export class SendUserEmailUpdateLinkController extends AbstractRest {
     schema: {
       $ref: getSchemaPath(ErrorDTO),
     },
-    description: 'DTO inválido ou erro na regras de negócio',
+    description: 'Erro do usuário',
   })
   @ApiResponse({
     status: 404,

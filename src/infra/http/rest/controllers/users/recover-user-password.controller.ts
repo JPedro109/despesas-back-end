@@ -29,7 +29,7 @@ export class RecoverUserPasswordController extends AbstractRest {
   @ApiOperation({ summary: 'Recuperar senha do usuário.' })
   @ApiResponse({
     status: 200,
-    description: 'Rota de recuperação de senha do usuário',
+    description: 'Senha recuperada com sucesso',
     type: String,
   })
   @ApiExtraModels(ErrorDTO)
@@ -38,7 +38,7 @@ export class RecoverUserPasswordController extends AbstractRest {
     schema: {
       $ref: getSchemaPath(ErrorDTO),
     },
-    description: 'DTO inválido ou erro na regras de negócio',
+    description: 'Erro do usuário',
   })
   @ApiResponse({
     status: 404,

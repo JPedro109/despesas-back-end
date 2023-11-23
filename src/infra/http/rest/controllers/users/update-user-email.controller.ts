@@ -38,7 +38,7 @@ export class UpdateUserEmailController extends AbstractRest {
   @ApiOperation({ summary: 'Atualizar email' })
   @ApiResponse({
     status: 200,
-    description: 'Rota de atualização de email',
+    description: 'Email atualizado com sucesso',
     type: String,
   })
   @ApiExtraModels(ErrorDTO)
@@ -47,7 +47,7 @@ export class UpdateUserEmailController extends AbstractRest {
     schema: {
       $ref: getSchemaPath(ErrorDTO),
     },
-    description: 'DTO inválido ou erro na regras de negócio',
+    description: 'Erro do usuário',
   })
   @ApiResponse({
     status: 404,

@@ -28,7 +28,7 @@ export class UserVerifyEmailController extends AbstractRest {
   @ApiOperation({ summary: 'Verificar email' })
   @ApiResponse({
     status: 200,
-    description: 'Rota de verificação de email',
+    description: 'Email verificado com sucesso',
     type: String,
   })
   @ApiExtraModels(ErrorDTO)
@@ -37,7 +37,7 @@ export class UserVerifyEmailController extends AbstractRest {
     schema: {
       $ref: getSchemaPath(ErrorDTO),
     },
-    description: 'DTO inválido ou erro na regras de negócio',
+    description: 'Erro do usuário',
   })
   @ApiResponse({
     status: 401,
