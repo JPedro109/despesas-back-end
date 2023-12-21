@@ -40,6 +40,19 @@ describe('/api/users/email - PATCH', () => {
     expect(response.body.error).toBe('Bad Request');
   });
 
+  test('Should not update user email, because email is invalid', async () => {
+    const body = makeBodyUpdateUserEmail('invalid_email', 'token');
+
+    const token = await loginRest('email_verified@test.com');
+
+    const response = await request(await getHttpServer())
+      .patch(`/api/users/email?email=${body.email}&code=${body.code}`)
+      .set('Authorization', `Bearer ${token}`);
+
+    expect(response.statusCode).toBe(400);
+    expect(response.body.error).toBe('InvalidEmailError');
+  });
+
   test('Should not update user email, because code is invalid', async () => {
     const body = makeBodyUpdateUserEmail(
       'email_verified@test.com',

@@ -8,6 +8,7 @@ import {
 
 import { InvalidParamError, NotFoundError } from '@/core/errors';
 import { UpdateUserEmailUseCase } from '@/core/domain/users/use-cases';
+import { InvalidEmailError } from '@/core/domain/users/entities';
 
 const makeSut = () => {
   const userRepositoryStub = new UserRepositoryStub();
@@ -28,6 +29,17 @@ const makeSut = () => {
 };
 
 describe('Use case - UpdateUserEmailUseCase', () => {
+  test('Should not update user email, because email is invalid', async () => {
+    const id = '2';
+    const email = 'invalid_email';
+    const code = 'code';
+    const { sut } = makeSut();
+
+    const result = await sut.execute({ id, email, code });
+
+    expect(result).toBeInstanceOf(InvalidEmailError);
+  });
+
   test('Should not update user email, because user is not exists', async () => {
     const id = '2';
     const email = 'email@test2.com';
