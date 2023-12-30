@@ -41,6 +41,7 @@ export class LogRepository implements AbstractLogRepository {
       title,
       message,
       trace,
+      created_at: new Date(),
     });
 
     return this.toMapperLogModel(log);
