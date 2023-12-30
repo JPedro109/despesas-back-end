@@ -1,11 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { MongooseModule } from '@nestjs/mongoose';
 import { DATABASE_NOSQL_URL } from '@/shared';
-import {
-  LogRepository,
-  LogExpense,
-  LogSchema,
-} from '@/infra/database/mongoose';
+import { LogRepository, LogSchema } from '@/infra/database/mongoose';
 
 describe('Infra - LogRepository', () => {
   let app: TestingModule;
@@ -15,9 +11,7 @@ describe('Infra - LogRepository', () => {
     app = await Test.createTestingModule({
       imports: [
         MongooseModule.forRoot(DATABASE_NOSQL_URL),
-        MongooseModule.forFeature([
-          { name: LogExpense.name, schema: LogSchema },
-        ]),
+        MongooseModule.forFeature([{ name: 'expense-log', schema: LogSchema }]),
       ],
       providers: [LogRepository],
     }).compile();

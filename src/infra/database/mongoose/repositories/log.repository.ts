@@ -7,7 +7,7 @@ import { LogExpense } from '../models';
 @Injectable()
 export class LogRepository implements AbstractLogRepository {
   constructor(
-    @InjectModel(LogExpense.name)
+    @InjectModel('expense-log')
     private readonly model: Model<LogExpense>,
   ) {}
 
