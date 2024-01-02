@@ -19,7 +19,9 @@ import { LogRepository, LogSchema } from './mongoose';
 
 @Module({
   imports: [
-    MongooseModule.forRoot(DATABASE_NOSQL_URL),
+    MongooseModule.forRoot(DATABASE_NOSQL_URL, {
+      dbName: 'log',
+    }),
     MongooseModule.forFeature([{ name: 'expense-log', schema: LogSchema }]),
   ],
   providers: [
