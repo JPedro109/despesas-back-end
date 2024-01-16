@@ -2,11 +2,12 @@ import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { UpdateExpenseController } from '@/infra/http/rest/controllers';
 import { NotFoundError } from '@/core/errors';
 import { testExpenseModel } from './datas';
-import { UpdateExpenseStub } from './stubs';
+import { LogStub, UpdateExpenseStub } from './stubs';
 
 const makeSut = () => {
   const updateExpenseStub = new UpdateExpenseStub();
-  const sut = new UpdateExpenseController(updateExpenseStub);
+  const logStub = new LogStub();
+  const sut = new UpdateExpenseController(updateExpenseStub, logStub);
 
   return {
     sut,
@@ -38,6 +39,7 @@ describe('Infra (Controller) - UpdateExpenseController', () => {
 
     await sut
       .handle(
+        {},
         { id: body.id },
         {
           expenseName: body.expenseName,
@@ -57,6 +59,7 @@ describe('Infra (Controller) - UpdateExpenseController', () => {
 
     await sut
       .handle(
+        {},
         { id: body.id },
         {
           expenseName: body.expenseName,
@@ -73,6 +76,7 @@ describe('Infra (Controller) - UpdateExpenseController', () => {
 
     const result = await sut
       .handle(
+        {},
         { id: body.id },
         {
           expenseName: body.expenseName,

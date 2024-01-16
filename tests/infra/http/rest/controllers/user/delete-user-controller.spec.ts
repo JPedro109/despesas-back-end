@@ -1,11 +1,12 @@
-import { BadRequestException } from '@nestjs/common';
+import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { DeleteUserController } from '@/infra/http/rest/controllers';
 import { InvalidParamError, NotFoundError } from '@/core/errors';
-import { DeleteUserStub } from './stubs';
+import { DeleteUserStub, LogStub } from './stubs';
 
 const makeSut = () => {
   const deleteUserStub = new DeleteUserStub();
-  const sut = new DeleteUserController(deleteUserStub);
+  const logStub = new LogStub();
+  const sut = new DeleteUserController(deleteUserStub, logStub);
 
   return {
     sut,
@@ -43,7 +44,7 @@ describe('Infra (Controller) - DeleteUserController', () => {
 
     await sut
       .handle({ user: body.id }, body)
-      .catch((e) => expect(e).toBeInstanceOf(BadRequestException));
+      .catch((e) => expect(e).toBeInstanceOf(NotFoundException));
   });
 
   test('Should delete user', async () => {

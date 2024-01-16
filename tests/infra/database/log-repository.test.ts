@@ -1,11 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { MongooseModule } from '@nestjs/mongoose';
 import { DATABASE_NOSQL_URL } from '@/shared';
-import {
-  LogRepository,
-  LogExpense,
-  LogSchema,
-} from '@/infra/database/mongoose';
+import { LogRepository, LogSchema } from '@/infra/database/mongoose';
 
 describe('Infra - LogRepository', () => {
   let app: TestingModule;
@@ -15,9 +11,7 @@ describe('Infra - LogRepository', () => {
     app = await Test.createTestingModule({
       imports: [
         MongooseModule.forRoot(DATABASE_NOSQL_URL),
-        MongooseModule.forFeature([
-          { name: LogExpense.name, schema: LogSchema },
-        ]),
+        MongooseModule.forFeature([{ name: 'expense-log', schema: LogSchema }]),
       ],
       providers: [LogRepository],
     }).compile();
@@ -26,15 +20,15 @@ describe('Infra - LogRepository', () => {
   });
 
   test('Should create logs and delete all | createLog', async () => {
+    const level = 'INFO';
+    const title = 'title';
     const message = 'message';
-    const stack = 'stack';
-    const name = 'name';
 
-    const log = await sut.createLog(message, stack, name);
+    const log = await sut.createLog(level, title, message);
 
+    expect(log.level).toBe(level);
+    expect(log.title).toBe(title);
     expect(log.message).toBe(message);
-    expect(log.stack).toBe(stack);
-    expect(log.name).toBe(name);
 
     await sut.deleteAllLogs();
   });

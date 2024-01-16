@@ -2,9 +2,9 @@ import {
   Param,
   Controller,
   Delete,
-  NotFoundException,
   HttpCode,
   UseGuards,
+  Req,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
@@ -15,8 +15,9 @@ import {
   getSchemaPath,
 } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
+import { AbstractLogService } from '@/core/ports';
+import { AbstractRest } from '@/infra/http/rest/abstract';
 import { AbstractDeleteExpenseUseCase } from '@/core/domain/expenses/abstracts';
-import { NotFoundError } from '@/core/errors';
 import {
   DeleteExpenseParamsDTO,
   ErrorDTO,
@@ -26,8 +27,13 @@ import {
 @ApiTags('Expenses')
 @ApiBearerAuth()
 @Controller('api/expenses')
-export class DeleteExpenseController {
-  constructor(private readonly useCase: AbstractDeleteExpenseUseCase) {}
+export class DeleteExpenseController extends AbstractRest {
+  constructor(
+    protected readonly useCase: AbstractDeleteExpenseUseCase,
+    protected readonly logService: AbstractLogService,
+  ) {
+    super(useCase, logService);
+  }
 
   @ApiOperation({ summary: 'Deletar despesa' })
   @ApiResponse({
@@ -41,7 +47,7 @@ export class DeleteExpenseController {
     schema: {
       $ref: getSchemaPath(ErrorDTO),
     },
-    description: 'DTO inválido ou erro na regras de negócio',
+    description: 'Erro do usuário',
   })
   @ApiResponse({
     status: 401,
@@ -68,19 +74,15 @@ export class DeleteExpenseController {
   @UseGuards(AuthGuard('jwt'))
   @HttpCode(200)
   @Delete(':id')
-  async handle(@Param() body: DeleteExpenseParamsDTO) {
+  async handle(@Req() req, @Param() body: DeleteExpenseParamsDTO) {
     const { id } = body;
 
-    const response = await this.useCase.execute({
-      id,
-    });
-
-    if (response instanceof NotFoundError)
-      throw new NotFoundException(response.message, {
-        cause: response,
-        description: response.name,
-      });
-
-    return response;
+    return await this.handler(
+      {
+        id,
+      },
+      req.path,
+      req.method,
+    );
   }
 }

@@ -1,10 +1,11 @@
 import { BadRequestException } from '@nestjs/common';
 import { CreateUserController } from '@/infra/http/rest/controllers';
-import { CreateUserStub } from './stubs';
+import { CreateUserStub, LogStub } from './stubs';
 
 const makeSut = () => {
   const createUserStub = new CreateUserStub();
-  const sut = new CreateUserController(createUserStub);
+  const logStub = new LogStub();
+  const sut = new CreateUserController(createUserStub, logStub);
 
   return {
     sut,
@@ -29,7 +30,7 @@ describe('Infra (Controller) - CreateUserController', () => {
       .mockReturnValueOnce(Promise.resolve(new Error('error')));
 
     await sut
-      .handle(body)
+      .handle({}, body)
       .catch((e) => expect(e).toBeInstanceOf(BadRequestException));
   });
 
@@ -37,7 +38,7 @@ describe('Infra (Controller) - CreateUserController', () => {
     const body = makeBody('email@test.com', 'Password1234', 'Password1234');
     const { sut } = makeSut();
 
-    const result = await sut.handle(body);
+    const result = await sut.handle({}, body);
 
     expect(result).toEqual(Object(body.email));
   });

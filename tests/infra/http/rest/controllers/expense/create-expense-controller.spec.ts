@@ -1,11 +1,12 @@
 import { BadRequestException } from '@nestjs/common';
 import { CreateExpenseController } from '@/infra/http/rest/controllers';
 import { testExpenseModel } from './datas';
-import { CreateExpenseStub } from './stubs';
+import { CreateExpenseStub, LogStub } from './stubs';
 
 const makeSut = () => {
   const createExpenseStub = new CreateExpenseStub();
-  const sut = new CreateExpenseController(createExpenseStub);
+  const logStub = new LogStub();
+  const sut = new CreateExpenseController(createExpenseStub, logStub);
 
   return {
     sut,

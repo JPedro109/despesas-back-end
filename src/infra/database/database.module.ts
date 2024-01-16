@@ -15,12 +15,14 @@ import {
   UnitOfWork,
   MockRepository,
 } from './prisma';
-import { LogExpense, LogRepository, LogSchema } from './mongoose';
+import { LogRepository, LogSchema } from './mongoose';
 
 @Module({
   imports: [
-    MongooseModule.forRoot(DATABASE_NOSQL_URL),
-    MongooseModule.forFeature([{ name: LogExpense.name, schema: LogSchema }]),
+    MongooseModule.forRoot(DATABASE_NOSQL_URL, {
+      dbName: 'log',
+    }),
+    MongooseModule.forFeature([{ name: 'expense-log', schema: LogSchema }]),
   ],
   providers: [
     DatabaseService,

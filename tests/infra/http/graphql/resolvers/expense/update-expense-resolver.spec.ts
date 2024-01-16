@@ -1,11 +1,12 @@
 import { GraphQLError } from 'graphql';
 import { UpdateExpenseResolver } from '@/infra/http/graphql/resolvers';
 import { testExpenseModel } from './datas';
-import { UpdateExpenseStub } from './stubs';
+import { LogStub, UpdateExpenseStub } from './stubs';
 
 const makeSut = () => {
   const updateExpenseStub = new UpdateExpenseStub();
-  const sut = new UpdateExpenseResolver(updateExpenseStub);
+  const logStub = new LogStub();
+  const sut = new UpdateExpenseResolver(updateExpenseStub, logStub);
 
   return {
     sut,
@@ -36,12 +37,15 @@ describe('Infra (Resolver) - UpdateExpenseResolver', () => {
       .mockReturnValueOnce(Promise.resolve(new Error('error')));
 
     await sut
-      .handle({
-        id: body.id,
-        expenseName: body.expenseName,
-        expenseValue: body.expenseValue,
-        dueDate: new Date(body.dueDate),
-      })
+      .handle(
+        { req: { path: '/', method: 'method' } },
+        {
+          id: body.id,
+          expenseName: body.expenseName,
+          expenseValue: body.expenseValue,
+          dueDate: new Date(body.dueDate),
+        },
+      )
       .catch((e) => expect(e).toBeInstanceOf(GraphQLError));
   });
 
@@ -49,12 +53,15 @@ describe('Infra (Resolver) - UpdateExpenseResolver', () => {
     const body = makeBody('1', 'expense', 100, '3000-01-01');
     const { sut } = makeSut();
 
-    const result = await sut.handle({
-      id: body.id,
-      expenseName: body.expenseName,
-      expenseValue: body.expenseValue,
-      dueDate: new Date(body.dueDate),
-    });
+    const result = await sut.handle(
+      { req: { path: '/', method: 'method' } },
+      {
+        id: body.id,
+        expenseName: body.expenseName,
+        expenseValue: body.expenseValue,
+        dueDate: new Date(body.dueDate),
+      },
+    );
 
     expect(result).toEqual(testExpenseModel);
   });

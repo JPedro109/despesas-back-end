@@ -1,11 +1,15 @@
 import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { RecoverUserPasswordController } from '@/infra/http/rest/controllers';
 import { InvalidParamError, NotFoundError } from '@/core/errors';
-import { RecoverUserPasswordStub } from './stubs';
+import { LogStub, RecoverUserPasswordStub } from './stubs';
 
 const makeSut = () => {
   const recoverUserPasswordStub = new RecoverUserPasswordStub();
-  const sut = new RecoverUserPasswordController(recoverUserPasswordStub);
+  const logStub = new LogStub();
+  const sut = new RecoverUserPasswordController(
+    recoverUserPasswordStub,
+    logStub,
+  );
 
   return {
     sut,
@@ -42,6 +46,7 @@ describe('Infra (Controller) - RecoverUserPasswordController', () => {
 
     await sut
       .handle(
+        {},
         { email: body.email, code: body.code },
         { password: body.password, passwordConfirm: body.passwordConfirm },
       )
@@ -57,6 +62,7 @@ describe('Infra (Controller) - RecoverUserPasswordController', () => {
 
     await sut
       .handle(
+        {},
         { email: body.email, code: body.code },
         { password: body.password, passwordConfirm: body.passwordConfirm },
       )
@@ -73,6 +79,7 @@ describe('Infra (Controller) - RecoverUserPasswordController', () => {
     const { sut } = makeSut();
 
     const result = await sut.handle(
+      {},
       { email: body.email, code: body.code },
       { password: body.password, passwordConfirm: body.passwordConfirm },
     );

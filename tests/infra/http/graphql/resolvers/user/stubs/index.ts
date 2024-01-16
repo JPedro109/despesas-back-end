@@ -31,6 +31,7 @@ import {
   UserVerifyEmailDTO,
   UserVerifyEmailResponseDTO,
 } from '@/core/domain/users/dtos';
+import { AbstractLogService } from '@/core/ports';
 
 export class CreateUserStub implements AbstractCreateUserUseCase {
   async execute({
@@ -124,5 +125,20 @@ export class UserVerifyEmailStub implements AbstractUserVerifyEmailUseCase {
     code,
   }: UserVerifyEmailDTO): Promise<UserVerifyEmailResponseDTO> {
     return email;
+  }
+}
+
+export class LogStub implements AbstractLogService {
+  trace(title: string, message: string, trace: string): boolean {
+    return true;
+  }
+  log(title: string, message: string): boolean {
+    return true;
+  }
+  warn(title: string, message: string): boolean {
+    return true;
+  }
+  error(title: string, message: string): boolean {
+    return true;
   }
 }

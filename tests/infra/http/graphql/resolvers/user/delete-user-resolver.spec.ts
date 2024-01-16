@@ -1,10 +1,11 @@
 import { GraphQLError } from 'graphql';
 import { DeleteUserResolver } from '@/infra/http/graphql/resolvers';
-import { DeleteUserStub } from './stubs';
+import { DeleteUserStub, LogStub } from './stubs';
 
 const makeSut = () => {
   const deleteUserStub = new DeleteUserStub();
-  const sut = new DeleteUserResolver(deleteUserStub);
+  const logStub = new LogStub();
+  const sut = new DeleteUserResolver(deleteUserStub, logStub);
 
   return {
     sut,
@@ -29,7 +30,7 @@ describe('Infra (Resolver) - DeleteUserResolver', () => {
       .mockReturnValueOnce(Promise.resolve(new Error('error')));
 
     await sut
-      .handle({ req: { user: body.id } }, body)
+      .handle({ req: { user: body.id, path: '/', method: 'method' } }, body)
       .catch((e) => expect(e).toBeInstanceOf(GraphQLError));
   });
 
@@ -37,7 +38,10 @@ describe('Infra (Resolver) - DeleteUserResolver', () => {
     const body = makeBody('1', 'Password1234', 'Password1234');
     const { sut } = makeSut();
 
-    const result = await sut.handle({ req: { user: body.id } }, body);
+    const result = await sut.handle(
+      { req: { user: body.id, path: '/', method: 'method' } },
+      body,
+    );
 
     expect(result).toEqual(Object(body.id));
   });

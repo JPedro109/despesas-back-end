@@ -2,11 +2,12 @@ import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { DeleteExpenseController } from '@/infra/http/rest/controllers';
 import { NotFoundError } from '@/core/errors';
 import { testExpenseModel } from './datas';
-import { DeleteExpenseStub } from './stubs';
+import { DeleteExpenseStub, LogStub } from './stubs';
 
 const makeSut = () => {
   const deleteExpensesStub = new DeleteExpenseStub();
-  const sut = new DeleteExpenseController(deleteExpensesStub);
+  const logStub = new LogStub();
+  const sut = new DeleteExpenseController(deleteExpensesStub, logStub);
 
   return {
     sut,
@@ -29,7 +30,7 @@ describe('Infra (Controller) - DeleteExpenseController', () => {
       .mockReturnValueOnce(Promise.resolve(new NotFoundError('error')));
 
     await sut
-      .handle(body)
+      .handle({}, body)
       .catch((e) => expect(e).toBeInstanceOf(NotFoundException));
   });
 
@@ -41,7 +42,7 @@ describe('Infra (Controller) - DeleteExpenseController', () => {
       .mockReturnValueOnce(Promise.resolve(new Error('error')));
 
     await sut
-      .handle(body)
+      .handle({}, body)
       .catch((e) => expect(e).toBeInstanceOf(BadRequestException));
   });
 
@@ -49,7 +50,7 @@ describe('Infra (Controller) - DeleteExpenseController', () => {
     const body = makeBody('1');
     const { sut } = makeSut();
 
-    const result = await sut.handle(body);
+    const result = await sut.handle({}, body);
 
     expect(result).toEqual(Object(testExpenseModel));
   });

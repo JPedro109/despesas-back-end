@@ -1,10 +1,11 @@
 import { GraphQLError } from 'graphql';
 import { RecoverUserPasswordResolver } from '@/infra/http/graphql/resolvers';
-import { RecoverUserPasswordStub } from './stubs';
+import { LogStub, RecoverUserPasswordStub } from './stubs';
 
 const makeSut = () => {
   const recoverUserPasswordStub = new RecoverUserPasswordStub();
-  const sut = new RecoverUserPasswordResolver(recoverUserPasswordStub);
+  const logStub = new LogStub();
+  const sut = new RecoverUserPasswordResolver(recoverUserPasswordStub, logStub);
 
   return {
     sut,
@@ -40,12 +41,15 @@ describe('Infra (Resolver) - RecoverUserPasswordResolver', () => {
       .mockResolvedValueOnce(Promise.resolve(new Error('error')));
 
     await sut
-      .handle({
-        email: body.email,
-        code: body.code,
-        password: body.password,
-        passwordConfirm: body.passwordConfirm,
-      })
+      .handle(
+        { req: { path: '/', method: 'method' } },
+        {
+          email: body.email,
+          code: body.code,
+          password: body.password,
+          passwordConfirm: body.passwordConfirm,
+        },
+      )
       .catch((e) => expect(e).toBeInstanceOf(GraphQLError));
   });
 
@@ -58,12 +62,15 @@ describe('Infra (Resolver) - RecoverUserPasswordResolver', () => {
     );
     const { sut } = makeSut();
 
-    const result = await sut.handle({
-      email: body.email,
-      code: body.code,
-      password: body.password,
-      passwordConfirm: body.passwordConfirm,
-    });
+    const result = await sut.handle(
+      { req: { path: '/', method: 'method' } },
+      {
+        email: body.email,
+        code: body.code,
+        password: body.password,
+        passwordConfirm: body.passwordConfirm,
+      },
+    );
 
     expect(result).toEqual(Object(body.email));
   });

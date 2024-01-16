@@ -1,14 +1,8 @@
 import { NestFactory } from '@nestjs/core';
-import { ConsoleLogger, INestApplication } from '@nestjs/common';
+import { INestApplication } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import {
-  ENVIRONMENT,
-  PORT,
-  APP_URL,
-  ValidationPipeCustom,
-  LoggerCustom,
-} from '@/shared';
-import { AbstractLogRepository } from '@/core/ports';
+import { ENVIRONMENT, PORT, APP_URL, ValidationPipeCustom } from '@/shared';
+import { AbstractLogService } from '@/core/ports';
 import { AppModule } from '@/app.module';
 
 export class Bootstrap {
@@ -24,15 +18,6 @@ export class Bootstrap {
         callback(new Error('Not allowed cors'));
       },
     });
-  }
-
-  private static addLog(app: INestApplication) {
-    app.useLogger(
-      new LoggerCustom(
-        new ConsoleLogger(),
-        app.get<AbstractLogRepository>(AbstractLogRepository),
-      ),
-    );
   }
 
   private static addPipes(app: INestApplication) {
@@ -57,13 +42,19 @@ export class Bootstrap {
     }
   }
 
+  private static addLog(app: INestApplication) {
+    const log = app.get<AbstractLogService>(AbstractLogService);
+
+    app.useLogger(log);
+  }
+
   static async execute() {
     const app = await NestFactory.create(AppModule);
 
     this.addCors(app);
-    this.addLog(app);
     this.addPipes(app);
     this.addDocumentation(app);
+    this.addLog(app);
 
     await app.listen(PORT || 3000);
   }

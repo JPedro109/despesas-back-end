@@ -1,11 +1,12 @@
 import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { UpdateUserEmailController } from '@/infra/http/rest/controllers';
 import { NotFoundError } from '@/core/errors';
-import { UpdateUserEmailStub } from './stubs';
+import { LogStub, UpdateUserEmailStub } from './stubs';
 
 const makeSut = () => {
   const updateUserEmailStub = new UpdateUserEmailStub();
-  const sut = new UpdateUserEmailController(updateUserEmailStub);
+  const logStub = new LogStub();
+  const sut = new UpdateUserEmailController(updateUserEmailStub, logStub);
 
   return {
     sut,

@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { Email } from '@/core/domain/users/entities';
 import { InvalidParamError, NotFoundError } from '@/core/errors';
 import { AbstractUnitOfWork } from '@/core/ports';
 import { AbstractUpdateUserEmailUseCase } from '../abstracts';
@@ -13,6 +14,10 @@ export class UpdateUserEmailUseCase implements AbstractUpdateUserEmailUseCase {
     email,
     code,
   }: UpdateUserEmailDTO): Promise<UpdateUserEmailResponseDTO> {
+    const emailOrError = Email.create(email);
+
+    if (emailOrError instanceof Error) return emailOrError;
+
     const userRepository = this.unitOfWork.getUserRepository();
     const userVerificationCodeRepository =
       this.unitOfWork.getUserVerificationCodeRepository();

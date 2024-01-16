@@ -19,6 +19,7 @@ import {
 } from '@/core/domain/expenses/dtos';
 
 import { testExpenseModel } from '../datas';
+import { AbstractLogService } from '@/core/ports';
 
 export class CreateExpenseStub implements AbstractCreateExpenseUseCase {
   async execute({
@@ -50,5 +51,20 @@ export class UpdateExpenseStub implements AbstractUpdateExpenseUseCase {
 export class DeleteExpenseStub implements AbstractDeleteExpenseUseCase {
   async execute({ id }: DeleteExpenseDTO): Promise<DeleteExpenseResponseDTO> {
     return testExpenseModel;
+  }
+}
+
+export class LogStub implements AbstractLogService {
+  trace(title: string, message: string, trace: string): boolean {
+    return true;
+  }
+  log(title: string, message: string): boolean {
+    return true;
+  }
+  warn(title: string, message: string): boolean {
+    return true;
+  }
+  error(title: string, message: string): boolean {
+    return true;
   }
 }

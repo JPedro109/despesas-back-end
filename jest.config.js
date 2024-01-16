@@ -6,6 +6,7 @@ module.exports = {
     '@/(.*)': '<rootDir>/src/$1',
   },
   collectCoverageFrom: [
+    '<rootDir>/src/**',
     '!<rootDir>/src/app.module.ts',
     '!<rootDir>/src/shared/**',
     '!<rootDir>/src/core/domain/**/*.module.ts',

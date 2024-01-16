@@ -3,10 +3,8 @@ import {
   Controller,
   HttpCode,
   Patch,
-  BadRequestException,
   UseGuards,
   Req,
-  NotFoundException,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
@@ -17,24 +15,30 @@ import {
   getSchemaPath,
 } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
+import { AbstractLogService } from '@/core/ports';
 import { AbstractUpdateUserEmailUseCase } from '@/core/domain/users/abstracts';
 import {
   ErrorDTO,
   InternalServerErrorDTO,
   UpdateUserEmailBodyDTO,
 } from '@/infra/http/rest/dtos';
-import { NotFoundError } from '@/core/errors';
+import { AbstractRest } from '@/infra/http/rest/abstract';
 
 @ApiTags('Users')
 @ApiBearerAuth()
 @Controller('api/users')
-export class UpdateUserEmailController {
-  constructor(private readonly useCase: AbstractUpdateUserEmailUseCase) {}
+export class UpdateUserEmailController extends AbstractRest {
+  constructor(
+    protected readonly useCase: AbstractUpdateUserEmailUseCase,
+    protected readonly logService: AbstractLogService,
+  ) {
+    super(useCase, logService);
+  }
 
   @ApiOperation({ summary: 'Atualizar email' })
   @ApiResponse({
     status: 200,
-    description: 'Rota de atualização de email',
+    description: 'Email atualizado com sucesso',
     type: String,
   })
   @ApiExtraModels(ErrorDTO)
@@ -43,7 +47,7 @@ export class UpdateUserEmailController {
     schema: {
       $ref: getSchemaPath(ErrorDTO),
     },
-    description: 'DTO inválido ou erro na regras de negócio',
+    description: 'Erro do usuário',
   })
   @ApiResponse({
     status: 404,
@@ -72,24 +76,14 @@ export class UpdateUserEmailController {
 
     const userId = req.user;
 
-    const response = await this.useCase.execute({
-      id: userId,
-      email,
-      code,
-    });
-
-    if (response instanceof NotFoundError)
-      throw new NotFoundException(response.message, {
-        cause: response,
-        description: response.name,
-      });
-
-    if (response instanceof Error)
-      throw new BadRequestException(response.message, {
-        cause: response,
-        description: response.name,
-      });
-
-    return Object(response);
+    return await this.handler(
+      {
+        id: userId,
+        email,
+        code,
+      },
+      req.path,
+      req.method,
+    );
   }
 }
